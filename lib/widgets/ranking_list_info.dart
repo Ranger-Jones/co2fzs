@@ -96,33 +96,35 @@ class RankingListRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        CircleAvatar(
-          child: Text(
-            "${index}",
-            style: Theme.of(context).textTheme.headline3,
+    return Expanded(
+      child: Row(
+        children: [
+          CircleAvatar(
+            child: Text(
+              "${index}",
+              style: Theme.of(context).textTheme.headline3,
+            ),
+            radius: ((MediaQuery.of(context).size.height * 0.1) / 3),
+            backgroundColor: primaryColor,
           ),
-          radius: ((MediaQuery.of(context).size.height * 0.1) / 3),
-          backgroundColor: primaryColor,
-        ),
-        Flexible(child: Container(), flex: 1),
-        SizedBox(
-          child: Text(
-            name,
-            style: Theme.of(context).textTheme.headline3,
-            textAlign: TextAlign.center,
+          Flexible(child: Container(), flex: 1),
+          SizedBox(
+            child: Text(
+              name,
+              style: Theme.of(context).textTheme.headline3,
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-        Flexible(child: Container(), flex: 1),
-        SizedBox(
-          child: Text(
-            points.toStringAsFixed(2),
-            style: Theme.of(context).textTheme.headline3,
-            textAlign: TextAlign.center,
+          Flexible(child: Container(), flex: 1),
+          SizedBox(
+            child: Text(
+              points.toStringAsFixed(2),
+              style: Theme.of(context).textTheme.headline3,
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
