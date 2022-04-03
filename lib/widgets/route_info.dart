@@ -64,7 +64,7 @@ class _RouteInfoState extends State<RouteInfo> {
             flex: 1,
           ),
           Text(
-            "${widget.route.points}",
+            "${widget.route.points.toStringAsFixed(2)}",
             style: Theme.of(context).textTheme.headline3,
           ),
           widget.route.driveBack ? Icon(Icons.arrow_back) : SizedBox(),

@@ -232,6 +232,7 @@ class _FeedScreenState extends State<FeedScreen> {
               stream: FirebaseFirestore.instance
                   .collection("users")
                   .orderBy("totalPoints", descending: true)
+                  .where("role", isEqualTo: "user")
                   .limit(3)
                   .snapshots(),
             ),
@@ -246,6 +247,8 @@ class _FeedScreenState extends State<FeedScreen> {
             RankingStream(
               activeRanking: "Klassen",
               stream: FirebaseFirestore.instance
+                  .collection("admin")
+                  .doc(user.schoolIdBlank)
                   .collection("classes")
                   .orderBy("totalPoints", descending: true)
                   .limit(3)

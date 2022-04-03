@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:co2fzs/models/location.dart';
 import 'package:co2fzs/models/post.dart';
 import 'package:co2fzs/models/route.dart';
 import 'package:co2fzs/models/transport_option.dart';
@@ -69,8 +70,22 @@ class FirestoreMethods {
     return res;
   }
 
+  Future<dynamic> catchLocation({
+    required String locationId,
+  }) async {
+    String res = "Undefined Error";
+    try {
+      DocumentSnapshot locationSnap =
+          await _firestore.collection("locations").doc(locationId).get();
+
+      return locationSnap;
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
+  }
+
   Future<String> uploadRoute({
-    required double distance,
     required String startAddress,
     required String endAddress,
     required bool driveBack,
@@ -137,13 +152,18 @@ class FirestoreMethods {
 
     double points = 0;
     TransportOption? transportOption = transportationMap[transport];
-    points = distance * transportOption!.scoreMultiplier;
 
     try {
       String routeId = const Uuid().v1();
+
+      final locationRes =
+          await _firestore.collection("locations").doc(startAddress).get();
+      Location location = Location.fromSnap(locationRes);
+
+      points = location.distanceFromSchool * transportOption!.scoreMultiplier;
       Route route = Route(
         date: date,
-        distance: distance,
+        distance: location.distanceFromSchool,
         driveBack: driveBack,
         endAddress: endAddress,
         points: points,
@@ -178,6 +198,17 @@ class FirestoreMethods {
           .doc(classId)
           .update({"totalPoints": FieldValue.increment(points)});
       res = "Success";
+    } catch (e) {
+      res = e.toString();
+    }
+    return res;
+  }
+
+  Future<String> catchConfig() async {
+    String res = "Undefined Error";
+    try {
+      final res = await _firestore.collection("config").doc("STATIC").get();
+      return res["version"];
     } catch (e) {
       res = e.toString();
     }

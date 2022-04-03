@@ -93,7 +93,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
 
   @override
   Widget build(BuildContext context) {
-    // user = Provider.of<UserProvider>(context).getUser;
+    user = Provider.of<UserProvider>(context).getUser;
 
     // school = Provider.of<SchoolProvider>(
     //   context,

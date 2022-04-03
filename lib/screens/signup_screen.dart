@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:co2fzs/models/location.dart';
 import 'package:co2fzs/models/school.dart';
 import 'package:co2fzs/models/schoolClass.dart';
 import 'package:co2fzs/resources/firestore_methods.dart';
 import 'package:co2fzs/widgets/auth_button.dart';
+import 'package:co2fzs/widgets/select_home_address_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,13 +37,19 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _homeAddressController = TextEditingController();
   final TextEditingController _homeAddress2Controller = TextEditingController();
+
   late String schoolClass;
   Uint8List? _image;
+
   bool _isLoading = false;
   int registrationStep = 1;
+
   List<String> classNames = [];
   List<SchoolClass> schoolClasses = [];
+
   late School school;
+  Location location1 = Location.getEmptyLocation();
+  Location location2 = Location.getEmptyLocation();
 
   @override
   void dispose() {
@@ -90,8 +98,8 @@ class _SignupScreenState extends State<SignupScreen> {
       schoolClass: schoolClass,
       schoolId: int.parse(_schoolIdController.text),
       file: _image!,
-      homeAddress: _homeAddressController.text,
-      homeAddress2: _homeAddress2Controller.text,
+      homeAddress: location1.id,
+      homeAddress2: location2.id,
       classId: schoolClasses
           .where((element) => element.name == schoolClass)
           .toList()[0],
@@ -185,8 +193,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
       if (_firstnameController.text != "" &&
           _lastnameController.text != "" &&
-          (schoolClass != null || schoolClass != "") &&
-          _homeAddressController.text != "") {
+          (schoolClass != null || schoolClass != "")) {
         registrationStep++;
       } else {
         showSnackBar(context, "Bitte fülle alle Felder aus");
@@ -194,6 +201,18 @@ class _SignupScreenState extends State<SignupScreen> {
     }
     setState(() {
       _isLoading = false;
+    });
+  }
+
+  setLocation(Location newValue) {
+    setState(() {
+      location1 = newValue;
+    });
+  }
+
+  setLocation2(Location newValue) {
+    setState(() {
+      location2 = newValue;
     });
   }
 
@@ -255,18 +274,6 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          TextFieldInput(
-            hintText: "Heimatadresse",
-            textInputType: TextInputType.streetAddress,
-            textEditingController: _homeAddressController,
-          ),
-          const SizedBox(height: 24),
-          TextFieldInput(
-            hintText: "Heimatadresse 2 (optional)",
-            textInputType: TextInputType.streetAddress,
-            textEditingController: _homeAddress2Controller,
-          ),
-          const SizedBox(height: 24),
           AuthButton(
             onTap: increaseRegistrationStep,
             label: "Weiter",
@@ -306,6 +313,34 @@ class _SignupScreenState extends State<SignupScreen> {
             textInputType: TextInputType.text,
             textEditingController: _usernameController,
           ),
+          const SizedBox(height: 24),
+          AuthButton(
+              onTap: () => showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30)),
+                    ),
+                    isScrollControlled: true,
+                    useRootNavigator: true,
+                    builder: (_) {
+                      print("SCHOOLCLASS ${schoolClasses[0].name}");
+                      SchoolClass schoolClassItem = schoolClasses.firstWhere(
+                        (element) => element.name == schoolClass,
+                      );
+                      print("SCHOOLCLASS ${schoolClassItem.name}");
+                      return SelectHomeAddress(
+                        classId: schoolClassItem.id,
+                        schoolId: school.id,
+                        setLocation: setLocation,
+                        setLocation2: setLocation2,
+                        location1: location1,
+                        location2: location2,
+                      );
+                    },
+                  ),
+              label: "Heimatadresse hinzufügen"),
           const SizedBox(height: 24),
           TextFieldInput(
             hintText: "Email",
@@ -355,14 +390,17 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 60),
             width: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: buildRegistrationSite(),
-            )),
+            ),
+          ),
+        ),
       ),
     );
   }

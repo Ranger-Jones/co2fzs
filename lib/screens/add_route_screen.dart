@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:co2fzs/models/contest.dart';
+import 'package:co2fzs/models/location.dart';
 import 'package:co2fzs/models/school.dart';
 import 'package:co2fzs/models/schoolClass.dart';
 import 'package:co2fzs/models/user.dart';
@@ -43,8 +44,12 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
   Contest? contest;
   DateTime startDate = DateTime.now();
 
+  Location location1 = Location.getEmptyLocation();
+  Location location2 = Location.getEmptyLocation();
+
   bool _schoolLoaded = false;
   bool _contestLoaded = false;
+  bool _locationLoaded = false;
 
   int addingStep = 0;
 
@@ -132,17 +137,48 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
     });
   }
 
+  void loadLocations() async {
+    User user = Provider.of<UserProvider>(context, listen: false).getUser;
+    setState(() {
+      _isLoading = true;
+      _contestLoadingAttempt++;
+    });
+
+    var res = await FirestoreMethods().catchLocation(
+      locationId: user.homeAddress,
+    );
+    if (res == "Undefined Error" || res is String) {
+      // showSnackBar(context, res);
+      return loadLocations();
+    } else {
+      location1 = Location.fromSnap(res);
+    }
+
+    if (user.homeAddress2 != "") {
+      var res = await FirestoreMethods().catchLocation(
+        locationId: user.homeAddress2,
+      );
+      if (res == "Undefined Error" || res is String) {
+        // showSnackBar(context, res);
+        return loadLocations();
+      } else {
+        location2 = Location.fromSnap(res);
+      }
+    }
+
+    setState(() {
+      _locationLoaded = true;
+    });
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   void uploadRoute(String schoolIdBlank, String schoolClassId) async {
     setState(() {
       _isLoading = true;
     });
-    bool isNumber = true;
-    double distance = 0;
-    try {
-      distance = double.parse(_distanceController.text);
-    } catch (e) {
-      isNumber = false;
-    }
 
     if (startDate == null) {
       showSnackBar(context, "Bitte wähle ein Datum aus");
@@ -153,26 +189,15 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
       return;
     }
 
-    if (!isNumber || _distanceController.text.isEmpty) {
-      showSnackBar(
-        context,
-        "Als Distanz sind nur Zahlen erlaubt, im Format 5 oder 5.5",
-      );
-      Navigator.pop(context);
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
+    Location selectedLocation;
 
-    if (distance > 100) {
-      showSnackBar(context, "Bitte wähle eine geringere Distanz");
-      Navigator.pop(context);
-      return;
+    if (startAddress == location1.name) {
+      selectedLocation = location1;
+    } else {
+      selectedLocation = location2;
     }
 
     String res = await FirestoreMethods().uploadRoute(
-      distance: distance,
       startAddress: startAddress,
       endAddress: endAddress,
       driveBack: isChecked,
@@ -246,13 +271,19 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
               transport_option: walk,
               onTap: () => selectVehicle("walk"),
               selected: checkedVehicle["walk"]!,
-              onDoubleTap: increaseAddingStep,
+              onDoubleTap: () {
+                selectVehicle("walk");
+                increaseAddingStep();
+              },
             ),
             ImageButton(
               transport_option: bicycle,
               onTap: () => selectVehicle("bicycle"),
               selected: checkedVehicle["bicycle"]!,
-              onDoubleTap: increaseAddingStep,
+              onDoubleTap: () {
+                selectVehicle("bicycle");
+                increaseAddingStep();
+              },
             ),
           ]),
           Row(
@@ -262,13 +293,19 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                 transport_option: pt,
                 onTap: () => selectVehicle("pt"),
                 selected: checkedVehicle["pt"]!,
-                onDoubleTap: increaseAddingStep,
+                onDoubleTap: () {
+                  increaseAddingStep();
+                  selectVehicle("pt");
+                },
               ),
               ImageButton(
                 transport_option: car,
                 onTap: () => selectVehicle("car"),
                 selected: checkedVehicle["car"]!,
-                onDoubleTap: increaseAddingStep,
+                onDoubleTap: () {
+                  selectVehicle("car");
+                  increaseAddingStep();
+                },
               ),
             ],
           ),
@@ -302,12 +339,6 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                 ? "Select Date"
                 : DateFormat.yMMMMd().format(startDate),
           ),
-          SizedBox(height: 16),
-          TextFieldInput(
-            hintText: "Kilometer Anzahl",
-            textEditingController: _distanceController,
-            textInputType: TextInputType.number,
-          ),
           SizedBox(
             height: 20,
           ),
@@ -328,7 +359,7 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                       startAddress = newValue!;
                     });
                   },
-                  items: [user.homeAddress, user.homeAddress2]
+                  items: [location1.name, location2.name]
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -337,7 +368,7 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                   }).toList(),
                 )
               : Text(
-                  "Heimatadresse: ${user.homeAddress}",
+                  "Heimatadresse: ${location1.name}",
                   style: Theme.of(context).textTheme.headline3,
                   textAlign: TextAlign.start,
                 ),
@@ -401,6 +432,10 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
 
     if (!_schoolLoaded) {
       loadSchool();
+    }
+
+    if (!_locationLoaded) {
+      loadLocations();
     }
 
     if (!_contestLoaded && _contestLoadingAttempt < 5) {

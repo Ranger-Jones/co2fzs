@@ -13,6 +13,7 @@ import 'package:co2fzs/utils/colors.dart';
 import 'package:co2fzs/utils/utils.dart';
 import 'package:co2fzs/widgets/icon_info.dart';
 import 'package:co2fzs/widgets/info_button.dart';
+import 'package:co2fzs/widgets/logout_button.dart';
 import 'package:co2fzs/widgets/route_info.dart';
 import 'package:co2fzs/widgets/statistic_bar_container.dart';
 import 'package:co2fzs/widgets/table_item.dart';
@@ -292,7 +293,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: [
                       Text(
-                        (user.totalPoints == 0) ? "0" : "${user.totalPoints}",
+                        (user.totalPoints == 0)
+                            ? "0"
+                            : "${user.totalPoints.toStringAsFixed(2)}",
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headline4,
                       ),
@@ -301,6 +304,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headline2,
                       ),
+                      SizedBox(height: 10),
+                      LogoutButton(),
                     ],
                   ),
                 ),
