@@ -4,8 +4,10 @@ import 'package:co2fzs/models/user.dart';
 import 'package:co2fzs/providers/user_provider.dart';
 import 'package:co2fzs/resources/firestore_methods.dart';
 import 'package:co2fzs/utils/colors.dart';
+import 'package:co2fzs/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class RouteDetail extends StatefulWidget {
   final model.Route route;
@@ -34,46 +36,45 @@ class _RouteDetailState extends State<RouteDetail> {
   //   loadLocation(widget.route.endAddress, false);
   // }
 
-  // deleteRoute() {}
+  deleteRoute() {}
 
   void loadLocation(String locationId, bool startLocationState) async {
     var res = await FirestoreMethods().catchLocation(
       locationId: locationId,
     );
     if (res == "Undefined Error" || res is String) {
-      // showSnackBar(context, res);
+      showSnackBar(context, res);
       return loadLocation(locationId, startLocationState);
     } else {
       if (startLocationState) {
         startLocation = Location.fromSnap(res);
-
-        _locationLoaded1 = true;
-      } else {
-        endLocation = Location.fromSnap(res);
-
-        _locationLoaded2 = true;
+        setState(() {
+          _locationLoaded1 = true;
+        });
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_locationLoaded1 && _locationLoaded2) {
+    print(widget.route.endAddress);
+    if (_locationLoaded1) {
       return Scaffold(
         appBar: AppBar(
           title: Text("Details"),
           backgroundColor: primaryColor,
           actions: [
-            // !widget.otherProfileState
-            //     ? IconButton(
-            //         icon: Icon(Icons.delete, color: lightRed),
-            //         onPressed: () => deleteRoute())
-            //     : Container()
+            !widget.otherProfileState
+                ? IconButton(
+                    icon: Icon(Icons.delete, color: lightRed),
+                    onPressed: () => deleteRoute())
+                : Container()
           ],
         ),
         body: SafeArea(
           child: Container(
             width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -87,28 +88,45 @@ class _RouteDetailState extends State<RouteDetail> {
                   "Punkte",
                   style: Theme.of(context).textTheme.headline3,
                 ),
-                // Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Column(
-                //         children: [
-                //           Text("VON"),
-                //           Text(
-                //             startLocation!.name,
-                //             style: Theme.of(context).textTheme.headline3,
-                //           )
-                //         ],
-                //       ),
-                //       Column(
-                //         children: [
-                //           Text("NACH"),
-                //           Text(
-                //             endLocation!.name,
-                //             style: Theme.of(context).textTheme.headline3,
-                //           )
-                //         ],
-                //       )
-                //     ]),
+                SizedBox(height: 10),
+                Divider(),
+                SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Text("VON"),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.45,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          child: AutoSizeText(
+                            startLocation!.name,
+                            style: Theme.of(context).textTheme.headline3,
+                            maxLines: 3,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text("NACH"),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.45,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          child: AutoSizeText(
+                            widget.route.endAddress,
+                            style: Theme.of(context).textTheme.headline3,
+                            maxLines: 3,
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                Icon(Icons.bike_scooter, size: 100, color: primaryColor)
               ],
             ),
           ),
@@ -116,7 +134,7 @@ class _RouteDetailState extends State<RouteDetail> {
       );
     } else {
       loadLocation(widget.route.startAddress, true);
-      loadLocation(widget.route.endAddress, false);
+      // loadLocation(widget.route.endAddress, false);
       return Scaffold(
         body: Center(
           child: CircularProgressIndicator(),

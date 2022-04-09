@@ -101,6 +101,7 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
       );
       setState(() {
         _schoolLoaded = true;
+        endAddress = school!.location;
       });
     }
     setState(() {
