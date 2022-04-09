@@ -2,6 +2,7 @@ import 'package:co2fzs/models/school.dart';
 import 'package:co2fzs/models/schoolClass.dart';
 import 'package:co2fzs/models/user.dart';
 import 'package:co2fzs/providers/user_provider.dart';
+import 'package:co2fzs/screens/profile_screen.dart';
 import 'package:co2fzs/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,10 +48,15 @@ class _RankingListInfoState extends State<RankingListInfo> {
   Widget buildRightInfo() {
     switch (type) {
       case "User":
-        return RankingListRow(
-            index: widget.index,
-            name: user!.firstname,
-            points: double.parse(user!.totalPoints.toStringAsFixed(2)));
+        return InkWell(
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) =>
+                  ProfileScreen(otherProfileState: true, otherProfile: user))),
+          child: RankingListRow(
+              index: widget.index,
+              name: user!.firstname,
+              points: double.parse(user!.totalPoints.toStringAsFixed(2))),
+        );
       case "School":
         return RankingListRow(
             index: widget.index,
@@ -96,35 +102,43 @@ class RankingListRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          CircleAvatar(
-            child: Text(
-              "${index}",
-              style: Theme.of(context).textTheme.headline3,
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CircleAvatar(
+              child: Text(
+                "${index}",
+                style: Theme.of(context).textTheme.headline3,
+              ),
+              radius: ((MediaQuery.of(context).size.height * 0.1) / 3),
+              backgroundColor: primaryColor,
             ),
-            radius: ((MediaQuery.of(context).size.height * 0.1) / 3),
-            backgroundColor: primaryColor,
-          ),
-          Flexible(child: Container(), flex: 1),
-          SizedBox(
-            child: Text(
-              name,
-              style: Theme.of(context).textTheme.headline3,
-              textAlign: TextAlign.center,
+            Flexible(
+              flex: 1,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  name,
+                  style: Theme.of(context).textTheme.headline3,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
-          ),
-          Flexible(child: Container(), flex: 1),
-          SizedBox(
-            child: Text(
-              points.toStringAsFixed(2),
-              style: Theme.of(context).textTheme.headline3,
-              textAlign: TextAlign.center,
+            Flexible(
+              flex: 1,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  points.toStringAsFixed(2),
+                  style: Theme.of(context).textTheme.headline3,
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 }

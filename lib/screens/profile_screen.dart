@@ -23,7 +23,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({Key? key}) : super(key: key);
+  User? otherProfile;
+  final bool otherProfileState;
+  ProfileScreen({Key? key, this.otherProfile, this.otherProfileState = false})
+      : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -61,12 +64,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void loadSchool() async {
-    User user = Provider.of<UserProvider>(context, listen: false).getUser;
+    User? user;
+    if (widget.otherProfileState) {
+      user = widget.otherProfile;
+    } else {
+      user = Provider.of<UserProvider>(context, listen: false).getUser;
+    }
     setState(() {
       _isLoading = true;
     });
     var res = await FirestoreMethods().catchSchool(
-      schoolId: user.schoolId,
+      schoolId: user!.schoolId,
     );
     if (res == "Undefined Error" ||
         res == "SchulID ist inkorrekt" ||
@@ -94,7 +102,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void loadContest() async {
-    User user = Provider.of<UserProvider>(context, listen: false).getUser;
+    User? user;
+    if (widget.otherProfileState) {
+      user = widget.otherProfile;
+    } else {
+      user = Provider.of<UserProvider>(context, listen: false).getUser;
+    }
     setState(() {
       _isLoading = true;
       _contestLoadingAttempt++;
@@ -106,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
     var res = await FirestoreMethods().catchContest(
-      contestId: user.contestId,
+      contestId: user!.contestId,
     );
     if (res == "Undefined Error" || res is String) {
       // showSnackBar(context, res);
@@ -125,7 +138,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void loadRoutes() async {
-    User user = Provider.of<UserProvider>(context, listen: false).getUser;
+    User? user;
+    if (widget.otherProfileState) {
+      user = widget.otherProfile;
+    } else {
+      user = Provider.of<UserProvider>(context, listen: false).getUser;
+    }
     setState(() {
       _isLoading = true;
       _routeLoadingAttempt++;
@@ -139,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     var res = await FirestoreMethods().catchRoutes(
-      uid: user.uid,
+      uid: user!.uid,
     );
 
     if (res == "Undefined Error" || res is String) {
@@ -149,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print("Documents: $res");
       res.forEach((e) => routes.add(model.Route.fromSnap(e)));
       setState(() {
-        averagePoints = calculateAveragePoints(res.length, user.totalPoints);
+        averagePoints = calculateAveragePoints(res.length, user!.totalPoints);
         mostUsedTransportOption = calculateAverageTransportOption();
         _routesLoaded = true;
       });
@@ -218,9 +236,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<UserProvider>(
-      context,
-    ).getUser;
+    User? user;
+    if (widget.otherProfileState) {
+      user = widget.otherProfile;
+    } else {
+      user = Provider.of<UserProvider>(
+        context,
+      ).getUser;
+    }
+
     // School school = Provider.of<SchoolProvider>(
     //   context,
     // ).getSchool;
@@ -228,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     //   context,
     // ).getSchoolClass;
 
-    userPoints = user.totalPoints;
+    userPoints = user!.totalPoints;
     if (!_schoolLoaded) {
       loadSchool();
     }
@@ -271,17 +295,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     Flexible(child: Container(), flex: 1),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(user.firstname),
-                            Text(" ${user.lastName}"),
+                            Row(
+                              children: [
+                                Text(user.firstname),
+                                Text(" ${user.lastName}"),
+                              ],
+                            ),
+                            Text("@${user.username}",
+                                style: Theme.of(context).textTheme.bodyText1),
                           ],
                         ),
-                        Text("@${user.username}",
-                            style: Theme.of(context).textTheme.bodyText1),
+                        !widget.otherProfileState ? LogoutButton() : Container()
                       ],
                     )
                   ],
@@ -305,7 +335,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: Theme.of(context).textTheme.headline2,
                       ),
                       SizedBox(height: 10),
-                      LogoutButton(),
                     ],
                   ),
                 ),
@@ -347,48 +376,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           )
                               .map((e) => StatisticBarContainer(
                                     date: e,
-                                    totalPoints: user.totalPoints,
+                                    totalPoints: user!.totalPoints,
                                     dailyPoints: dailyPoints(e),
                                   ))
                               .toList(),
                         ),
                       ),
                 SizedBox(height: 20),
-                Text(
-                  "Meine Rankings",
-                  style: Theme.of(context).textTheme.headline3,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    physics: ClampingScrollPhysics(),
-                    shrinkWrap: true,
-                    primary: false,
-                    children: [
-                      InfoButton(
-                        assetUrl: "assets/images/school.svg",
-                        label: "Meine\nSchule",
-                        backgroundColor: secondaryColor,
-                        onTap: () {},
-                      ),
-                      InfoButton(
-                        assetUrl: "assets/images/classroom.svg",
-                        label: "Meine\nKlasse",
-                        backgroundColor: lightBlue,
-                        onTap: () {},
-                      ),
-                      InfoButton(
-                        assetUrl: "assets/images/people.svg",
-                        label: "Meine\nFreunde",
-                        backgroundColor: lightPurple,
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                ),
+                !widget.otherProfileState
+                    ? Column(
+                        children: [
+                          Text(
+                            "Meine Rankings",
+                            style: Theme.of(context).textTheme.headline3,
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 20),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              physics: ClampingScrollPhysics(),
+                              shrinkWrap: true,
+                              primary: false,
+                              children: [
+                                InfoButton(
+                                  assetUrl: "assets/images/school.svg",
+                                  label: "Meine\nSchule",
+                                  backgroundColor: secondaryColor,
+                                  onTap: () {},
+                                ),
+                                InfoButton(
+                                  assetUrl: "assets/images/classroom.svg",
+                                  label: "Meine\nKlasse",
+                                  backgroundColor: lightBlue,
+                                  onTap: () {},
+                                ),
+                                InfoButton(
+                                  assetUrl: "assets/images/people.svg",
+                                  label: "Meine\nFreunde",
+                                  backgroundColor: lightPurple,
+                                  onTap: () {},
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
                 SizedBox(height: 20),
                 Text(
                   "Meine Einträge",
@@ -423,6 +458,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               route: model.Route.fromSnap(
                                 snapshot.data!.docs[index],
                               ),
+                              otherProfileState: widget.otherProfileState,
                             ),
                           ],
                         );

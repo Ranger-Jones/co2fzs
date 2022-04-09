@@ -3,6 +3,7 @@ import 'package:co2fzs/providers/school_class_provider.dart';
 import 'package:co2fzs/providers/school_provider.dart';
 import 'package:co2fzs/screens/rankings_screen.dart';
 import 'package:co2fzs/utils/config.dart';
+import 'package:co2fzs/widgets/route_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
         // ChangeNotifierProvider(create: (_) => ContestProvider()),
       ],
       child: MaterialApp(
-        title: 'Raving Hub',
+        title: 'CO2fzs',
         theme: ThemeData().copyWith(
           textTheme: const TextTheme(
             headline1: TextStyle(
@@ -95,7 +96,6 @@ class MyApp extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
                 if (snapshot.hasData) {
-                  
                   return const ResponsiveLayout(
                     webScreenLayout: WebScreenLayout(),
                     mobileScreenLayout: MobileScreenLayout(),

@@ -9,6 +9,7 @@ import 'package:co2fzs/providers/school_provider.dart';
 import 'package:co2fzs/providers/user_provider.dart';
 import 'package:co2fzs/resources/firestore_methods.dart';
 import 'package:co2fzs/screens/add_route_screen.dart';
+import 'package:co2fzs/utils/config.dart';
 import 'package:co2fzs/utils/utils.dart';
 import 'package:co2fzs/widgets/ranking_list_info.dart';
 import 'package:co2fzs/widgets/ranking_stream.dart';
@@ -31,6 +32,7 @@ class _FeedScreenState extends State<FeedScreen> {
   bool _isLoading = false;
   bool _routesLoaded = false;
   int loadingAttempt = 0;
+  String version = "v0";
 
   List<model.Route> routes = [];
 
@@ -72,12 +74,57 @@ class _FeedScreenState extends State<FeedScreen> {
     });
   }
 
+  loadConfig() async {
+    String res = await FirestoreMethods().catchConfig();
+    print(res);
+    if (res[0] == "v") {
+      setState(() {
+        version = res;
+      });
+    } else {
+      return loadConfig();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadConfig();
+  }
+
   @override
   Widget build(BuildContext context) {
     // FirebaseAuth.instance.signOut();
     model.User user = Provider.of<UserProvider>(
       context,
     ).getUser;
+
+    if (version == "v0") {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    
+    if (CO2FZSCONFIG.version != version) {
+      return Scaffold(
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Anscheinend stimmt etwas mit deiner Version nicht. Update die App oder versuche es später erneut",
+                textAlign: TextAlign.center,
+              ),
+              CircularProgressIndicator(),
+            ],
+          ),
+        ),
+      );
+    }
 
     // FirebaseAuth.instance.signOut();
     if (!_routesLoaded && loadingAttempt < 4) {

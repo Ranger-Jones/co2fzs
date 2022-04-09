@@ -41,7 +41,6 @@ class _ResponsiveLayoutState extends State<ResponsiveLayout> {
     // TODO: implement initState
     super.initState();
     addUserData();
-    loadConfig();
   }
 
   addData() async {
@@ -49,17 +48,6 @@ class _ResponsiveLayoutState extends State<ResponsiveLayout> {
 
     await addSchoolClassData();
     await addContestData();
-  }
-
-  loadConfig() async {
-    String res = await FirestoreMethods().catchConfig();
-    if (res[0] == "v") {
-      setState(() {
-        version = res;
-      });
-    } else {
-      return loadConfig();
-    }
   }
 
   addUserData() async {
@@ -100,30 +88,7 @@ class _ResponsiveLayoutState extends State<ResponsiveLayout> {
   Widget build(BuildContext context) {
     //  FirebaseAuth.instance.signOut();
     // addData();
-    if (version == "v0") {
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-    if (CO2FZSCONFIG.version != version) {
-      return Scaffold(
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Anscheinend stimmt etwas mit deiner Version nicht. Update die App oder versuche es später erneut",
-                textAlign: TextAlign.center,
-              ),
-              CircularProgressIndicator(),
-            ],
-          ),
-        ),
-      );
-    }
+
     if (user != null) {
       print(user!.toJson().toString());
       if (user!.role == "admin" || !user!.activated) {

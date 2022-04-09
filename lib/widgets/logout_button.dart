@@ -11,7 +11,7 @@ class LogoutButton extends StatelessWidget {
       onPressed: () => FirebaseAuth.instance.signOut(),
       icon: const Icon(
         Icons.power_settings_new,
-        size: 50,
+        size: 40,
         color: primaryColor,
       ),
     );
