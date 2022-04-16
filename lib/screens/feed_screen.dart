@@ -156,54 +156,54 @@ class _FeedScreenState extends State<FeedScreen> {
             SizedBox(
               height: 20,
             ),
-            StreamBuilder(
-              stream:
-                  FirebaseFirestore.instance.collection("users").snapshots(),
-              builder: (context,
-                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                var docs = snapshot.data!.docs;
+            // StreamBuilder(
+            //   stream:
+            //       FirebaseFirestore.instance.collection("users").snapshots(),
+            //   builder: (context,
+            //       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            //     if (snapshot.connectionState == ConnectionState.waiting) {
+            //       return const Center(child: CircularProgressIndicator());
+            //     }
+            //     var docs = snapshot.data!.docs;
 
-                List<model.User> users =
-                    docs.map((e) => model.User.fromSnap(e)).toList();
+            //     List<model.User> users =
+            //         docs.map((e) => model.User.fromSnap(e)).toList();
 
-                int carCount = users
-                    .where((element) => element.transport == "Auto")
-                    .length;
-                int ptCount = users
-                    .where((element) => element.transport == "ÖPNV")
-                    .length;
-                int bicycleCount = users
-                    .where((element) => element.transport == "Fahrrad")
-                    .length;
-                int walkCount = users
-                    .where((element) => element.transport == "Zu Fuß")
-                    .length;
+            //     int carCount = users
+            //         .where((element) => element.transport == "Auto")
+            //         .length;
+            //     int ptCount = users
+            //         .where((element) => element.transport == "ÖPNV")
+            //         .length;
+            //     int bicycleCount = users
+            //         .where((element) => element.transport == "Fahrrad")
+            //         .length;
+            //     int walkCount = users
+            //         .where((element) => element.transport == "Zu Fuß")
+            //         .length;
 
-                List<Map<String, int>> transportListCount = [
-                  {
-                    "Auto": carCount,
-                  },
-                  {
-                    "ÖPNV": ptCount,
-                  },
-                  {
-                    "Fahrrad": bicycleCount,
-                  },
-                  {
-                    "Zu Fuß": walkCount,
-                  }
-                ];
+            //     List<Map<String, int>> transportListCount = [
+            //       {
+            //         "Auto": carCount,
+            //       },
+            //       {
+            //         "ÖPNV": ptCount,
+            //       },
+            //       {
+            //         "Fahrrad": bicycleCount,
+            //       },
+            //       {
+            //         "Zu Fuß": walkCount,
+            //       }
+            //     ];
 
-                //  List<charts.Series<Map<String, int>, String>> series = [charts.Series(id: "transport", data: transportListCount, domainFn: (Map<String, int>, _))]
+            //     //  List<charts.Series<Map<String, int>, String>> series = [charts.Series(id: "transport", data: transportListCount, domainFn: (Map<String, int>, _))]
 
-                return Text("");
+            //     return Text("");
 
-                // return charts.PieChart();
-              },
-            ),
+            //     // return charts.PieChart();
+            //   },
+            // ),
             Container(
               height: MediaQuery.of(context).size.height * 0.15,
               width: double.infinity,

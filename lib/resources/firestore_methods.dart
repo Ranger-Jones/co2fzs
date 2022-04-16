@@ -57,6 +57,24 @@ class FirestoreMethods {
     return res;
   }
 
+  Future<String> deleteRoute(String userId, String routeId) async {
+    String res = "Undefined Error";
+
+    try {
+      await _firestore
+          .collection("users")
+          .doc(userId)
+          .collection("routes")
+          .doc(routeId)
+          .delete();
+      res = "success";
+    } catch (e) {
+      res = e.toString();
+    }
+
+    return res;
+  }
+
   Future<dynamic> catchContest({required String contestId}) async {
     String res = "Undefined Error";
     try {
@@ -231,6 +249,24 @@ class FirestoreMethods {
       } else {
         return classesSnapshots.docs;
       }
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
+  }
+
+  Future<dynamic> catchClass(
+      {required String schoolIdBlank, required String classId}) async {
+    String res = "Undefined Error";
+    try {
+      var res = await _firestore
+          .collection("admin")
+          .doc(schoolIdBlank)
+          .collection("classes")
+          .doc(classId)
+          .get();
+
+      return res;
     } catch (err) {
       res = err.toString();
     }

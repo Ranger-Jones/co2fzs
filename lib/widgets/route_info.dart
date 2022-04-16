@@ -53,6 +53,7 @@ class _RouteInfoState extends State<RouteInfo> {
         MaterialPageRoute(
           builder: (_) => RouteDetail(
             route: widget.route,
+            otherProfileState: widget.otherProfileState,
           ),
         ),
       ),

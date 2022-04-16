@@ -36,7 +36,19 @@ class _RouteDetailState extends State<RouteDetail> {
   //   loadLocation(widget.route.endAddress, false);
   // }
 
-  deleteRoute() {}
+  deleteRoute(String userId, String routeId) async {
+    try {
+      String res = await FirestoreMethods().deleteRoute(userId, routeId);
+      if (res == "success") {
+        Navigator.of(context).pop();
+        return;
+      } else {
+        showSnackBar(context, res);
+      }
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
 
   void loadLocation(String locationId, bool startLocationState) async {
     var res = await FirestoreMethods().catchLocation(
@@ -57,7 +69,7 @@ class _RouteDetailState extends State<RouteDetail> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.route.endAddress);
+    User user = Provider.of<UserProvider>(context).getUser;
     if (_locationLoaded1) {
       return Scaffold(
         appBar: AppBar(
@@ -67,7 +79,11 @@ class _RouteDetailState extends State<RouteDetail> {
             !widget.otherProfileState
                 ? IconButton(
                     icon: Icon(Icons.delete, color: lightRed),
-                    onPressed: () => deleteRoute())
+                    onPressed: () => deleteRoute(
+                      user.uid,
+                      widget.route.id,
+                    ),
+                  )
                 : Container()
           ],
         ),

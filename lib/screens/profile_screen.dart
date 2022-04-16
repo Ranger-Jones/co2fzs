@@ -9,6 +9,8 @@ import 'package:co2fzs/providers/school_provider.dart';
 import 'package:co2fzs/providers/user_provider.dart';
 import 'package:co2fzs/resources/auth_methods.dart';
 import 'package:co2fzs/resources/firestore_methods.dart';
+import 'package:co2fzs/screens/class_detail_screen.dart';
+import 'package:co2fzs/screens/school_detail_screen.dart';
 import 'package:co2fzs/utils/colors.dart';
 import 'package:co2fzs/utils/utils.dart';
 import 'package:co2fzs/widgets/icon_info.dart';
@@ -36,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ScrollController _scrollController = ScrollController();
   School? school;
   Contest? contest;
+  SchoolClass? schoolClass;
   List<model.Route> routes = [];
 
   String mostUsedTransportOption = "Auto";
@@ -50,6 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _schoolLoaded = false;
   bool _contestLoaded = false;
   bool _routesLoaded = false;
+  bool _schoolClassLoaded = false;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -63,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
   }
 
-  void loadSchool() async {
+  void loadSchool(BuildContext context) async {
     User? user;
     if (widget.otherProfileState) {
       user = widget.otherProfile;
@@ -80,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         res == "SchulID ist inkorrekt" ||
         res is String) {
       showSnackBar(context, res);
-      loadSchool();
+      loadSchool(context);
     } else {
       school = School(
         schoolId: res["schoolId"],
@@ -101,7 +105,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void loadContest() async {
+  void loadClass(BuildContext context) async {
+    User? user;
+    if (widget.otherProfileState) {
+      user = widget.otherProfile;
+    } else {
+      user = Provider.of<UserProvider>(context, listen: false).getUser;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+    var res = await FirestoreMethods().catchClass(
+      schoolIdBlank: user!.schoolIdBlank,
+      classId: user.classId,
+    );
+    if (res is String) {
+      showSnackBar(context, res);
+      return loadClass(context);
+    } else {
+      schoolClass = SchoolClass.fromSnap(res);
+      setState(() {
+        _schoolClassLoaded = true;
+      });
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void loadContest(BuildContext context) async {
     User? user;
     if (widget.otherProfileState) {
       user = widget.otherProfile;
@@ -123,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     if (res == "Undefined Error" || res is String) {
       // showSnackBar(context, res);
-      return loadContest();
+      return loadContest(context);
     } else {
       contest = Contest.fromSnap(res);
     }
@@ -137,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void loadRoutes() async {
+  void loadRoutes(BuildContext context) async {
     User? user;
     if (widget.otherProfileState) {
       user = widget.otherProfile;
@@ -162,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (res == "Undefined Error" || res is String) {
       // showSnackBar(context, res);
-      return loadRoutes();
+      return loadRoutes(context);
     } else {
       print("Documents: $res");
       res.forEach((e) => routes.add(model.Route.fromSnap(e)));
@@ -254,13 +286,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     userPoints = user!.totalPoints;
     if (!_schoolLoaded) {
-      loadSchool();
+      loadSchool(context);
     }
     if (!_contestLoaded && _contestLoadingAttempt < 5) {
-      loadContest();
+      loadContest(context);
     }
     if (!_routesLoaded && _routeLoadingAttempt < 5) {
-      loadRoutes();
+      loadRoutes(context);
+    }
+    if (!_schoolClassLoaded) {
+      loadClass(context);
     }
     // if (school.schoolname == "none") {
     //   Provider.of<SchoolProvider>(
@@ -404,20 +439,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   assetUrl: "assets/images/school.svg",
                                   label: "Meine\nSchule",
                                   backgroundColor: secondaryColor,
-                                  onTap: () {},
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (_) => SchoolDetailScreen(
+                                            school: school!)),
+                                  ),
                                 ),
                                 InfoButton(
                                   assetUrl: "assets/images/classroom.svg",
                                   label: "Meine\nKlasse",
                                   backgroundColor: lightBlue,
-                                  onTap: () {},
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (_) => ClassDetailScreen(
+                                            schoolClass: schoolClass!)),
+                                  ),
                                 ),
-                                InfoButton(
-                                  assetUrl: "assets/images/people.svg",
-                                  label: "Meine\nFreunde",
-                                  backgroundColor: lightPurple,
-                                  onTap: () {},
-                                ),
+                                // InfoButton(
+                                //   assetUrl: "assets/images/people.svg",
+                                //   label: "Meine\nFreunde",
+                                //   backgroundColor: lightPurple,
+                                //   onTap: () {},
+                                // ),
                               ],
                             ),
                           ),
