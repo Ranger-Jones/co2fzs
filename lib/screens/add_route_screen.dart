@@ -42,7 +42,10 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
 
   School? school;
   Contest? contest;
-  DateTime startDate = DateTime.now();
+  DateTime startDate =
+      (DateTime.now().weekday == 6 || DateTime.now().weekday == 7)
+          ? DateTime.now().subtract(const Duration(days: 2))
+          : DateTime.now();
 
   Location location1 = Location.getEmptyLocation();
   Location location2 = Location.getEmptyLocation();
@@ -98,6 +101,7 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
       );
       setState(() {
         _schoolLoaded = true;
+        endAddress = school!.location;
       });
     }
     setState(() {
@@ -323,15 +327,26 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                 maxTime: DateTime.now(),
                 onChanged: (date) {
                   setState(() {
-                    startDate = date;
+                    if (startDate.weekday == 6 || startDate.weekday == 7) {
+                      startDate = contest!.startDate.toDate();
+                    } else {
+                      startDate = date;
+                    }
                   });
                 },
                 onConfirm: (date) {
                   setState(() {
-                    startDate = date;
+                    if (startDate.weekday == 6 || startDate.weekday == 7) {
+                      startDate = contest!.startDate.toDate();
+                    } else {
+                      startDate = date;
+                    }
                   });
                 },
-                currentTime: DateTime.now(),
+                currentTime:
+                    (DateTime.now().weekday == 6 || DateTime.now().weekday == 7)
+                        ? contest!.startDate.toDate()
+                        : DateTime.now(),
                 locale: LocaleType.de,
               );
             },

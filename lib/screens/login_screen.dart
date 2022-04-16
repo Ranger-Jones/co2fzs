@@ -37,21 +37,21 @@ class _LoginScreenState extends State<LoginScreen> {
       email: _emailController.text,
       password: _passwordController.text,
     );
-    setState(() {
-      _isLoading = false;
-    });
+
     if (res == "success") {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => const ResponsiveLayout(
             webScreenLayout: WebScreenLayout(),
             mobileScreenLayout: MobileScreenLayout(),
-  
           ),
         ),
       );
     } else {
       showSnackBar(context, res);
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -120,13 +120,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                        child: const Text("Don't have an account? "),
-                        padding: const EdgeInsets.symmetric(vertical: 8)),
                     GestureDetector(
                       onTap: navigateToSignup,
                       child: Container(
-                          child: const Text("Sign Up!",
+                          child: const Text("Noch keinen Account?",
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           padding: const EdgeInsets.symmetric(vertical: 8)),
                     )
