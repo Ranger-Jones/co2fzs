@@ -25,16 +25,15 @@ class _RankingsScreenState extends State<RankingsScreen> {
   var currentDataStream =
       FirebaseFirestore.instance.collection("posts").snapshots();
   List<String> rankingOptions = [
+    "Alle Schüler deiner Schule",
     "Schulen",
     "Klassen",
     "Deine Klasse",
     "Fahrrad",
-    "Auto",
     "ÖPNV",
     "zu Fuß",
-    "Alle Schüler deiner Schule"
   ];
-  String activeRanking = "Alle Schüler";
+  String activeRanking = "Alle Schüler deiner Schule";
 
   bool _isLoading = true;
 

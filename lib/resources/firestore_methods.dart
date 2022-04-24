@@ -57,7 +57,13 @@ class FirestoreMethods {
     return res;
   }
 
-  Future<String> deleteRoute(String userId, String routeId) async {
+  Future<String> deleteRoute({
+    required String userId,
+    required String routeId,
+    required String schoolIdBlank,
+    required String classId,
+    required double points,
+  }) async {
     String res = "Undefined Error";
 
     try {
@@ -67,6 +73,22 @@ class FirestoreMethods {
           .collection("routes")
           .doc(routeId)
           .delete();
+      await _firestore
+          .collection("users")
+          .doc(userId)
+          .update({"totalPoints": FieldValue.increment(-points)});
+
+      await _firestore
+          .collection("admin")
+          .doc(schoolIdBlank)
+          .update({"totalPoints": FieldValue.increment(points)});
+
+      await _firestore
+          .collection("admin")
+          .doc(schoolIdBlank)
+          .collection("classes")
+          .doc(classId)
+          .update({"totalPoints": FieldValue.increment(points)});
       res = "success";
     } catch (e) {
       res = e.toString();

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class TableItem extends StatelessWidget {
@@ -16,6 +17,7 @@ class TableItem extends StatelessWidget {
       child: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 label,
@@ -25,14 +27,14 @@ class TableItem extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              Flexible(
-                child: Container(),
-                flex: 2,
+         
+              AutoSizeText(
+                info,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyText2,
+                maxLines: 2,
               ),
-              Text(info,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyText2),
             ],
           ),
           Divider(),

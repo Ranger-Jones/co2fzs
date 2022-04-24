@@ -36,9 +36,15 @@ class _RouteDetailState extends State<RouteDetail> {
   //   loadLocation(widget.route.endAddress, false);
   // }
 
-  deleteRoute(String userId, String routeId) async {
+  deleteRoute(String userId, String routeId, String schoolId, String classId,
+      double points) async {
     try {
-      String res = await FirestoreMethods().deleteRoute(userId, routeId);
+      String res = await FirestoreMethods().deleteRoute(
+          userId: userId,
+          routeId: routeId,
+          points: points,
+          classId: classId,
+          schoolIdBlank: schoolId);
       if (res == "success") {
         Navigator.of(context).pop();
         return;
@@ -79,10 +85,8 @@ class _RouteDetailState extends State<RouteDetail> {
             !widget.otherProfileState
                 ? IconButton(
                     icon: Icon(Icons.delete, color: lightRed),
-                    onPressed: () => deleteRoute(
-                      user.uid,
-                      widget.route.id,
-                    ),
+                    onPressed: () => deleteRoute(user.uid, widget.route.id,
+                        user.schoolIdBlank, user.classId, widget.route.points),
                   )
                 : Container()
           ],

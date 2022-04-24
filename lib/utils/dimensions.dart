@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:co2fzs/screens/feed_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
-const webScreenSize = 600;
+const webScreenSize = 5000;
 
 List<Widget> homeScreenItems(BuildContext context) {
   return [
@@ -21,7 +21,7 @@ List<Widget> homeScreenItems(BuildContext context) {
 
 final TransportOption walk = TransportOption(
   name: "Zu Fuß",
-  scoreMultiplier: 2,
+  scoreMultiplier: 10,
   photoUrl:
       "https://images.unsplash.com/photo-1519255122284-c3acd66be602?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8d2Fsa3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
   userCounter: 0,
@@ -29,7 +29,7 @@ final TransportOption walk = TransportOption(
 
 final TransportOption bicycle = TransportOption(
   name: "Fahrrad",
-  scoreMultiplier: 1.5,
+  scoreMultiplier: 2.5,
   photoUrl:
       "https://images.unsplash.com/photo-1574965234283-2f20a4cffa43?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8YmljeWNsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
   userCounter: 0,

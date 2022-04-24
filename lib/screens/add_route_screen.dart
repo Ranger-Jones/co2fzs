@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:co2fzs/models/contest.dart';
 import 'package:co2fzs/models/location.dart';
@@ -257,182 +258,6 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
     return blueColor;
   }
 
-  List<Widget> buildAddingStep(User user) {
-    switch (addingStep) {
-      case 0:
-        return [
-          ModalDivider(),
-          Container(
-            margin: const EdgeInsets.only(top: 10, bottom: 20),
-            child: Text(
-              "Wie bist du heute zur Schule gekommen?",
-              style: Theme.of(context).textTheme.headline3,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            ImageButton(
-              transport_option: walk,
-              onTap: () => selectVehicle("walk"),
-              selected: checkedVehicle["walk"]!,
-              onDoubleTap: () {
-                selectVehicle("walk");
-                increaseAddingStep();
-              },
-            ),
-            ImageButton(
-              transport_option: bicycle,
-              onTap: () => selectVehicle("bicycle"),
-              selected: checkedVehicle["bicycle"]!,
-              onDoubleTap: () {
-                selectVehicle("bicycle");
-                increaseAddingStep();
-              },
-            ),
-          ]),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ImageButton(
-                transport_option: pt,
-                onTap: () => selectVehicle("pt"),
-                selected: checkedVehicle["pt"]!,
-                onDoubleTap: () {
-                  increaseAddingStep();
-                  selectVehicle("pt");
-                },
-              ),
-              ImageButton(
-                transport_option: car,
-                onTap: () => selectVehicle("car"),
-                selected: checkedVehicle["car"]!,
-                onDoubleTap: () {
-                  selectVehicle("car");
-                  increaseAddingStep();
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-        ];
-      case 1:
-        return [
-          ModalDivider(),
-          AuthButton(
-            onTap: () {
-              DatePicker.showDatePicker(
-                context,
-                showTitleActions: true,
-                minTime: contest!.startDate.toDate(),
-                maxTime: DateTime.now(),
-                onChanged: (date) {
-                  setState(() {
-                    if (startDate.weekday == 6 || startDate.weekday == 7) {
-                      startDate = contest!.startDate.toDate();
-                    } else {
-                      startDate = date;
-                    }
-                  });
-                },
-                onConfirm: (date) {
-                  setState(() {
-                    if (startDate.weekday == 6 || startDate.weekday == 7) {
-                      startDate = contest!.startDate.toDate();
-                    } else {
-                      startDate = date;
-                    }
-                  });
-                },
-                currentTime:
-                    (DateTime.now().weekday == 6 || DateTime.now().weekday == 7)
-                        ? contest!.startDate.toDate()
-                        : DateTime.now(),
-                locale: LocaleType.de,
-              );
-            },
-            label: startDate == null
-                ? "Select Date"
-                : DateFormat.yMMMMd().format(startDate),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          user.homeAddress2 != "" && user.homeAddress != user.homeAddress2
-              ? DropdownButton<String>(
-                  value: startAddress,
-                  icon: const Icon(Icons.arrow_downward, color: primaryColor),
-                  elevation: 16,
-                  style: Theme.of(context).textTheme.bodyText2,
-                  isExpanded: true,
-                  alignment: Alignment.center,
-                  underline: Container(
-                    height: 2,
-                    color: blueColor,
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      startAddress = newValue!;
-                    });
-                  },
-                  items: [location1.name, location2.name]
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                )
-              : Text(
-                  "Heimatadresse: ${location1.name}",
-                  style: Theme.of(context).textTheme.headline3,
-                  textAlign: TextAlign.start,
-                ),
-          SizedBox(height: 16),
-          Text(
-            "Schuladresse: ${school!.location}",
-            style: Theme.of(context).textTheme.headline3,
-            textAlign: TextAlign.start,
-          ),
-          SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Rückfahrt?",
-                style: Theme.of(context).textTheme.headline3,
-                textAlign: TextAlign.start,
-              ),
-              Checkbox(
-                checkColor: Colors.white,
-                fillColor: MaterialStateProperty.resolveWith(getColor),
-                value: isChecked,
-                onChanged: (bool? value) {
-                  setState(
-                    () {
-                      isChecked = value!;
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          AuthButton(
-            onTap: () {
-              uploadRoute(user.schoolIdBlank, user.classId);
-            },
-            label: "Eintrag speichern",
-            isLoading: _isLoading,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-        ];
-      default:
-        return [];
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     //Contest contest = Provider.of<ContestProvider>(context).getContest;
@@ -471,7 +296,338 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: buildAddingStep(user),
+                      children: [
+                        ModalDivider(),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10, bottom: 20),
+                          child: Text(
+                            "Wie bist du heute zur Schule gekommen?",
+                            style: Theme.of(context).textTheme.headline3,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ImageButton(
+                                transport_option: walk,
+                                onTap: () => selectVehicle("walk"),
+                                selected: checkedVehicle["walk"]!,
+                                onDoubleTap: () {
+                                  selectVehicle("walk");
+                                  increaseAddingStep();
+                                },
+                              ),
+                              ImageButton(
+                                transport_option: bicycle,
+                                onTap: () => selectVehicle("bicycle"),
+                                selected: checkedVehicle["bicycle"]!,
+                                onDoubleTap: () {
+                                  selectVehicle("bicycle");
+                                  increaseAddingStep();
+                                },
+                              ),
+                            ]),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ImageButton(
+                              transport_option: pt,
+                              onTap: () => selectVehicle("pt"),
+                              selected: checkedVehicle["pt"]!,
+                              onDoubleTap: () {
+                                increaseAddingStep();
+                                selectVehicle("pt");
+                              },
+                            ),
+                            ImageButton(
+                              transport_option: car,
+                              onTap: () => selectVehicle("car"),
+                              selected: checkedVehicle["car"]!,
+                              onDoubleTap: () {
+                                selectVehicle("car");
+                                increaseAddingStep();
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        AuthButton(
+                          onTap: () {
+                            DatePicker.showDatePicker(
+                              context,
+                              showTitleActions: true,
+                              minTime: contest!.startDate.toDate(),
+                              maxTime: DateTime.now(),
+                              onChanged: (date) {
+                                setState(() {
+                                  if (startDate.weekday == 6 ||
+                                      startDate.weekday == 7) {
+                                    startDate = contest!.startDate.toDate();
+                                  } else {
+                                    startDate = date;
+                                  }
+                                });
+                              },
+                              onConfirm: (date) {
+                                setState(() {
+                                  if (startDate.weekday == 6 ||
+                                      startDate.weekday == 7) {
+                                    startDate = contest!.startDate.toDate();
+                                  } else {
+                                    startDate = date;
+                                  }
+                                });
+                              },
+                              currentTime: (DateTime.now().weekday == 6 ||
+                                      DateTime.now().weekday == 7)
+                                  ? contest!.startDate.toDate()
+                                  : DateTime.now(),
+                              locale: LocaleType.de,
+                            );
+                          },
+                          label: startDate == null
+                              ? "Select Date"
+                              : DateFormat.yMMMMd().format(startDate),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.13,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "VON",
+                                      ),
+                                      isChecked
+                                          ? AutoSizeText(
+                                              school!.location,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText2!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                     maxLines: 3,
+                                                textAlign: TextAlign.center,
+                                            )
+                                          : user.homeAddress2 != "" &&
+                                                  user.homeAddress !=
+                                                      user.homeAddress2
+                                              ? DropdownButton<String>(
+                                                  value: startAddress,
+                                                  icon: const Icon(
+                                                      Icons.arrow_downward,
+                                                      color: primaryColor),
+                                                  elevation: 16,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText2,
+                                                  isExpanded: true,
+                                                  alignment: Alignment.center,
+                                                  underline: Container(
+                                                    height: 2,
+                                                    color: blueColor,
+                                                  ),
+                                                  onChanged:
+                                                      (String? newValue) {
+                                                    setState(() {
+                                                      startAddress = newValue!;
+                                                    });
+                                                  },
+                                                  items: [
+                                                    location1.name,
+                                                    location2.name
+                                                  ].map<
+                                                          DropdownMenuItem<
+                                                              String>>(
+                                                      (String value) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: Text(value),
+                                                    );
+                                                  }).toList(),
+                                                )
+                                              : Text(
+                                                  location1.name,
+                                                     maxLines: 3,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText2!
+                                                      .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.13,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "NACH",
+                                      ),
+                                      isChecked
+                                          ? user.homeAddress2 != "" &&
+                                                  user.homeAddress !=
+                                                      user.homeAddress2
+                                              ? DropdownButton<String>(
+                                                  value: startAddress,
+                                                  icon: const Icon(
+                                                      Icons.arrow_downward,
+                                                      color: primaryColor),
+                                                  elevation: 16,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText2,
+                                                  isExpanded: true,
+                                                  alignment: Alignment.center,
+                                                  underline: Container(
+                                                    height: 2,
+                                                    color: blueColor,
+                                                  ),
+                                                  onChanged:
+                                                      (String? newValue) {
+                                                    setState(() {
+                                                      startAddress = newValue!;
+                                                    });
+                                                  },
+                                                  items: [
+                                                    location1.name,
+                                                    location2.name
+                                                  ].map<
+                                                          DropdownMenuItem<
+                                                              String>>(
+                                                      (String value) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: Text(value),
+                                                    );
+                                                  }).toList(),
+                                                )
+                                              : AutoSizeText(
+                                                    location1.name,
+                                                       maxLines: 3,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                   .bodyText2!
+                                                      .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                textAlign: TextAlign.center,
+                                                )
+                                          : AutoSizeText(
+                                              school!.location,
+                                              maxLines: 3,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText2!
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                          textAlign: TextAlign.center,
+                                            ),
+                                      SizedBox(height: 16),
+                                    ],
+                                  ),
+                                )
+                              ]),
+                        ),
+                        // user.homeAddress2 != "" &&
+                        //         user.homeAddress != user.homeAddress2
+                        //     ? DropdownButton<String>(
+                        //         value: startAddress,
+                        //         icon: const Icon(Icons.arrow_downward,
+                        //             color: primaryColor),
+                        //         elevation: 16,
+                        //         style: Theme.of(context).textTheme.bodyText2,
+                        //         isExpanded: true,
+                        //         alignment: Alignment.center,
+                        //         underline: Container(
+                        //           height: 2,
+                        //           color: blueColor,
+                        //         ),
+                        //         onChanged: (String? newValue) {
+                        //           setState(() {
+                        //             startAddress = newValue!;
+                        //           });
+                        //         },
+                        //         items: [
+                        //           location1.name,
+                        //           location2.name
+                        //         ].map<DropdownMenuItem<String>>((String value) {
+                        //           return DropdownMenuItem<String>(
+                        //             value: value,
+                        //             child: Text(value),
+                        //           );
+                        //         }).toList(),
+                        //       )
+                        //     : Text(
+                        //         "Heimatadresse: ${location1.name}",
+                        //         style: Theme.of(context).textTheme.headline3,
+                        //         textAlign: TextAlign.start,
+                        //       ),
+                        // SizedBox(height: 16),
+                        // Text(
+                        //   "Schuladresse: ${school!.location}",
+                        //   style: Theme.of(context).textTheme.headline3,
+                        //   textAlign: TextAlign.start,
+                        // ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              child: AutoSizeText(
+                                "Willst du eine Rückfahrt eintragen? Dann setze hier den Haken.",
+                                style: Theme.of(context).textTheme.bodyText2,
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                            Checkbox(
+                              checkColor: Colors.white,
+                              fillColor:
+                                  MaterialStateProperty.resolveWith(getColor),
+                              value: isChecked,
+                              onChanged: (bool? value) {
+                                setState(
+                                  () {
+                                    isChecked = value!;
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        AuthButton(
+                          onTap: () {
+                            uploadRoute(user.schoolIdBlank, user.classId);
+                          },
+                          label: "Eintrag speichern",
+                          isLoading: _isLoading,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
                     ))
               : Center(
                   child: CircularProgressIndicator(),

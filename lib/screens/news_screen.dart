@@ -12,7 +12,7 @@ class NewsScreen extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            margin: const EdgeInsets.only(left: 15, top: 75),
+            margin: const EdgeInsets.only(top: 75, bottom: 50),
             child: Column(
               children: [
                 Text(

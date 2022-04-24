@@ -2,7 +2,9 @@ import 'package:co2fzs/models/school.dart';
 import 'package:co2fzs/models/schoolClass.dart';
 import 'package:co2fzs/models/user.dart';
 import 'package:co2fzs/providers/user_provider.dart';
+import 'package:co2fzs/screens/class_detail_screen.dart';
 import 'package:co2fzs/screens/profile_screen.dart';
+import 'package:co2fzs/screens/school_detail_screen.dart';
 import 'package:co2fzs/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -58,16 +60,33 @@ class _RankingListInfoState extends State<RankingListInfo> {
               points: double.parse(user!.totalPoints.toStringAsFixed(2))),
         );
       case "School":
-        return RankingListRow(
-            index: widget.index,
-            name: school!.schoolname,
-            points: double.parse(school!.totalPoints.toStringAsFixed(2)));
+        return InkWell(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => SchoolDetailScreen(school: school!),
+            ),
+          ),
+          child: RankingListRow(
+              index: widget.index,
+              name: school!.schoolname,
+              points: double.parse(school!.totalPoints.toStringAsFixed(2))),
+        );
       case "SchoolClass":
         print(schoolClass!.totalPoints.toStringAsFixed(2));
-        return RankingListRow(
+        return InkWell(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ClassDetailScreen(schoolClass: schoolClass!),
+            ),
+          ),
+          child: RankingListRow(
             index: widget.index,
             name: schoolClass!.name,
-            points: double.parse(schoolClass!.totalPoints.toStringAsFixed(2)));
+            points: double.parse(
+              schoolClass!.totalPoints.toStringAsFixed(2),
+            ),
+          ),
+        );
 
       default:
         return Center(child: CircularProgressIndicator());
