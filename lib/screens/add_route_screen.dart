@@ -240,6 +240,20 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
     });
   }
 
+  Future<void> _selectDateWeb(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: startDate,
+      firstDate: contest!.startDate.toDate(),
+      lastDate: startDate,
+    );
+    if (picked != null && picked != startDate) {
+      setState(() {
+        startDate = picked;
+      });
+    }
+  }
+
   void increaseAddingStep() {
     setState(() {
       addingStep++;
@@ -300,92 +314,148 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                         ModalDivider(),
                         Container(
                           margin: const EdgeInsets.only(top: 10, bottom: 20),
+                          width: double.infinity,
                           child: Text(
                             "Wie bist du heute zur Schule gekommen?",
                             style: Theme.of(context).textTheme.headline3,
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ImageButton(
-                                transport_option: walk,
-                                onTap: () => selectVehicle("walk"),
-                                selected: checkedVehicle["walk"]!,
-                                onDoubleTap: () {
-                                  selectVehicle("walk");
-                                  increaseAddingStep();
-                                },
+                        MediaQuery.of(context).size.width < 600
+                            ? Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ImageButton(
+                                        transport_option: walk,
+                                        onTap: () => selectVehicle("walk"),
+                                        selected: checkedVehicle["walk"]!,
+                                        onDoubleTap: () {
+                                          selectVehicle("walk");
+                                          increaseAddingStep();
+                                        },
+                                      ),
+                                      ImageButton(
+                                        transport_option: bicycle,
+                                        onTap: () => selectVehicle("bicycle"),
+                                        selected: checkedVehicle["bicycle"]!,
+                                        onDoubleTap: () {
+                                          selectVehicle("bicycle");
+                                          increaseAddingStep();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ImageButton(
+                                        transport_option: pt,
+                                        onTap: () => selectVehicle("pt"),
+                                        selected: checkedVehicle["pt"]!,
+                                        onDoubleTap: () {
+                                          increaseAddingStep();
+                                          selectVehicle("pt");
+                                        },
+                                      ),
+                                      ImageButton(
+                                        transport_option: car,
+                                        onTap: () => selectVehicle("car"),
+                                        selected: checkedVehicle["car"]!,
+                                        onDoubleTap: () {
+                                          selectVehicle("car");
+                                          increaseAddingStep();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ImageButton(
+                                    transport_option: pt,
+                                    onTap: () => selectVehicle("pt"),
+                                    selected: checkedVehicle["pt"]!,
+                                    onDoubleTap: () {
+                                      increaseAddingStep();
+                                      selectVehicle("pt");
+                                    },
+                                    web: true,
+                                  ),
+                                  ImageButton(
+                                    transport_option: car,
+                                    onTap: () => selectVehicle("car"),
+                                    selected: checkedVehicle["car"]!,
+                                    onDoubleTap: () {
+                                      selectVehicle("car");
+                                      increaseAddingStep();
+                                    },
+                                    web: true,
+                                  ),
+                                  ImageButton(
+                                    transport_option: walk,
+                                    onTap: () => selectVehicle("walk"),
+                                    selected: checkedVehicle["walk"]!,
+                                    onDoubleTap: () {
+                                      selectVehicle("walk");
+                                      increaseAddingStep();
+                                    },
+                                    web: true,
+                                  ),
+                                  ImageButton(
+                                    transport_option: bicycle,
+                                    onTap: () => selectVehicle("bicycle"),
+                                    selected: checkedVehicle["bicycle"]!,
+                                    onDoubleTap: () {
+                                      selectVehicle("bicycle");
+                                      increaseAddingStep();
+                                    },
+                                    web: true,
+                                  ),
+                                ],
                               ),
-                              ImageButton(
-                                transport_option: bicycle,
-                                onTap: () => selectVehicle("bicycle"),
-                                selected: checkedVehicle["bicycle"]!,
-                                onDoubleTap: () {
-                                  selectVehicle("bicycle");
-                                  increaseAddingStep();
-                                },
-                              ),
-                            ]),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ImageButton(
-                              transport_option: pt,
-                              onTap: () => selectVehicle("pt"),
-                              selected: checkedVehicle["pt"]!,
-                              onDoubleTap: () {
-                                increaseAddingStep();
-                                selectVehicle("pt");
-                              },
-                            ),
-                            ImageButton(
-                              transport_option: car,
-                              onTap: () => selectVehicle("car"),
-                              selected: checkedVehicle["car"]!,
-                              onDoubleTap: () {
-                                selectVehicle("car");
-                                increaseAddingStep();
-                              },
-                            ),
-                          ],
-                        ),
                         SizedBox(height: 20),
                         AuthButton(
-                          onTap: () {
-                            DatePicker.showDatePicker(
-                              context,
-                              showTitleActions: true,
-                              minTime: contest!.startDate.toDate(),
-                              maxTime: DateTime.now(),
-                              onChanged: (date) {
-                                setState(() {
-                                  if (startDate.weekday == 6 ||
-                                      startDate.weekday == 7) {
-                                    startDate = contest!.startDate.toDate();
-                                  } else {
-                                    startDate = date;
-                                  }
-                                });
-                              },
-                              onConfirm: (date) {
-                                setState(() {
-                                  if (startDate.weekday == 6 ||
-                                      startDate.weekday == 7) {
-                                    startDate = contest!.startDate.toDate();
-                                  } else {
-                                    startDate = date;
-                                  }
-                                });
-                              },
-                              currentTime: (DateTime.now().weekday == 6 ||
-                                      DateTime.now().weekday == 7)
-                                  ? contest!.startDate.toDate()
-                                  : DateTime.now(),
-                              locale: LocaleType.de,
-                            );
-                          },
+                          onTap: MediaQuery.of(context).size.width < 600
+                              ? () {
+                                  DatePicker.showDatePicker(
+                                    context,
+                                    showTitleActions: true,
+                                    minTime: contest!.startDate.toDate(),
+                                    maxTime: DateTime.now(),
+                                    onChanged: (date) {
+                                      setState(() {
+                                        if (startDate.weekday == 6 ||
+                                            startDate.weekday == 7) {
+                                          startDate =
+                                              contest!.startDate.toDate();
+                                        } else {
+                                          startDate = date;
+                                        }
+                                      });
+                                    },
+                                    onConfirm: (date) {
+                                      setState(() {
+                                        if (startDate.weekday == 6 ||
+                                            startDate.weekday == 7) {
+                                          startDate =
+                                              contest!.startDate.toDate();
+                                        } else {
+                                          startDate = date;
+                                        }
+                                      });
+                                    },
+                                    currentTime: (DateTime.now().weekday == 6 ||
+                                            DateTime.now().weekday == 7)
+                                        ? contest!.startDate.toDate()
+                                        : DateTime.now(),
+                                    locale: LocaleType.de,
+                                  );
+                                }
+                              : () => _selectDateWeb(context),
                           label: startDate == null
                               ? "Select Date"
                               : DateFormat.yMMMMd().format(startDate),
@@ -417,8 +487,8 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                                                   .copyWith(
                                                     fontWeight: FontWeight.bold,
                                                   ),
-                                                     maxLines: 3,
-                                                textAlign: TextAlign.center,
+                                              maxLines: 3,
+                                              textAlign: TextAlign.center,
                                             )
                                           : user.homeAddress2 != "" &&
                                                   user.homeAddress !=
@@ -460,7 +530,7 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                                                 )
                                               : Text(
                                                   location1.name,
-                                                     maxLines: 3,
+                                                  maxLines: 3,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodyText2!
@@ -522,15 +592,15 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                                                   }).toList(),
                                                 )
                                               : AutoSizeText(
-                                                    location1.name,
-                                                       maxLines: 3,
+                                                  location1.name,
+                                                  maxLines: 3,
                                                   style: Theme.of(context)
                                                       .textTheme
-                                                   .bodyText2!
+                                                      .bodyText2!
                                                       .copyWith(
                                                           fontWeight:
                                                               FontWeight.bold),
-                                                textAlign: TextAlign.center,
+                                                  textAlign: TextAlign.center,
                                                 )
                                           : AutoSizeText(
                                               school!.location,
@@ -541,7 +611,7 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                                                   .copyWith(
                                                       fontWeight:
                                                           FontWeight.bold),
-                                                          textAlign: TextAlign.center,
+                                              textAlign: TextAlign.center,
                                             ),
                                       SizedBox(height: 16),
                                     ],

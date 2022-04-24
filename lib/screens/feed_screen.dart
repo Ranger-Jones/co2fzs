@@ -1,5 +1,6 @@
-import 'package:charts_flutter/flutter.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:co2fzs/models/article.dart';
 import 'package:co2fzs/models/route.dart' as model;
 import 'package:co2fzs/models/school.dart';
 import 'package:co2fzs/models/schoolClass.dart';
@@ -11,6 +12,8 @@ import 'package:co2fzs/resources/firestore_methods.dart';
 import 'package:co2fzs/screens/add_route_screen.dart';
 import 'package:co2fzs/utils/config.dart';
 import 'package:co2fzs/utils/utils.dart';
+import 'package:co2fzs/widgets/article_info.dart';
+import 'package:co2fzs/widgets/article_info_row_card.dart';
 import 'package:co2fzs/widgets/ranking_list_info.dart';
 import 'package:co2fzs/widgets/ranking_stream.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -18,6 +21,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:co2fzs/utils/colors.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import "package:charts_flutter/flutter.dart" as charts;
 
@@ -33,6 +37,8 @@ class _FeedScreenState extends State<FeedScreen> {
   bool _routesLoaded = false;
   int loadingAttempt = 0;
   String version = "v0";
+  int routesToday = 0;
+  bool weekEnd = false;
 
   List<model.Route> routes = [];
 
@@ -74,6 +80,14 @@ class _FeedScreenState extends State<FeedScreen> {
     });
   }
 
+  checkWeekEnd() {
+    if (DateFormat.E().format(DateTime.now()).toString()[0] == "S") {
+      setState(() {
+        weekEnd = true;
+      });
+    }
+  }
+
   loadConfig() async {
     String res = await FirestoreMethods().catchConfig();
     print(res);
@@ -86,10 +100,28 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
+  loadRoutesToday() async {
+    try {
+      var res = await FirestoreMethods().routesToday();
+      if (res is String) {
+        showSnackBar(context, res);
+      } else if (res is int) {
+        setState(() {
+          routesToday = res;
+        });
+      }
+      print("ROUTES TODAY: ${res}");
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     loadConfig();
+    loadRoutesToday();
+    checkWeekEnd();
   }
 
   @override
@@ -233,56 +265,59 @@ class _FeedScreenState extends State<FeedScreen> {
             //     // return charts.PieChart();
             //   },
             // ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.15,
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 15),
-              child: InkWell(
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30)),
-                  ),
-                  isScrollControlled: true,
-                  useRootNavigator: true,
-                  builder: (_) => AddRouteScreen(),
-                ),
-                child: DottedBorder(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: primaryColor,
+            (!weekEnd && routesToday < 2)
+                ? Container(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    child: InkWell(
+                      onTap: () => showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30)),
+                        ),
+                        isScrollControlled: true,
+                        useRootNavigator: true,
+                        builder: (_) => AddRouteScreen(),
+                      ),
+                      child: DottedBorder(
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: primaryColor,
+                          ),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Du hast heute noch keinen oder erst einen Eintrag gemacht.",
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline3!
+                                      .copyWith(color: Colors.white),
+                                ),
+                                Text(
+                                  "Hier klicken um einen hinzuzufügen",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: Colors.white),
+                                ),
+                              ]),
+                        ),
+                        radius: const Radius.circular(10),
+                        borderType: BorderType.RRect,
+                        strokeWidth: 3,
+                        dashPattern: [10, 6],
+                        color: Colors.grey,
+                      ),
                     ),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Du hast heute noch keinen Eintrag gemacht.",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline3!
-                                .copyWith(color: Colors.white),
-                          ),
-                          Text(
-                            "Hier klicken um einen hinzuzufügen",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(color: Colors.white),
-                          ),
-                        ]),
-                  ),
-                  radius: const Radius.circular(10),
-                  borderType: BorderType.RRect,
-                  strokeWidth: 3,
-                  dashPattern: [10, 6],
-                  color: Colors.grey,
-                ),
-              ),
-            ),
+                  )
+                : Container(),
             Container(
               margin: const EdgeInsets.only(left: 15, top: 15),
               child: Text(
@@ -291,6 +326,25 @@ class _FeedScreenState extends State<FeedScreen> {
                 textAlign: TextAlign.center,
               ),
             ),
+            StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection("articles")
+                    .snapshots(),
+                builder: (context,
+                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                        snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) => ArticleInfoRowCard(
+                        article: Article.fromSnap(snapshot.data!.docs[index])),
+                  );
+                }),
             SizedBox(
               height: 20,
             ),

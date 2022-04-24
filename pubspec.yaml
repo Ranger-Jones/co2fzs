@@ -73,6 +73,10 @@ flutter:
     - assets/images/classroom.svg
     - assets/images/people.svg
     - assets/images/logo.png
+    - assets/images/Auto.JPG
+    - assets/images/ÖPNV.JPG
+    - assets/images/Fahrrad.JPG
+    - assets/images/Fußgänger.JPG
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see

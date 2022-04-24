@@ -7,6 +7,7 @@ class ImageButton extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final VoidCallback onDoubleTap;
+  final bool web;
 
   const ImageButton({
     Key? key,
@@ -14,6 +15,7 @@ class ImageButton extends StatelessWidget {
     this.selected = false,
     required this.onTap,
     required this.onDoubleTap,
+    this.web = false,
   }) : super(key: key);
 
   @override
@@ -24,8 +26,12 @@ class ImageButton extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.43,
-            height: MediaQuery.of(context).size.height * 0.2,
+            width: web
+                ? MediaQuery.of(context).size.width * 0.22
+                : MediaQuery.of(context).size.width * 0.43,
+            height: web
+                ? MediaQuery.of(context).size.width * 0.22
+                : MediaQuery.of(context).size.width * 0.43,
             decoration: BoxDecoration(
               border:
                   Border.all(width: selected ? 2 : 0.1, color: primaryColor),
@@ -34,7 +40,7 @@ class ImageButton extends StatelessWidget {
             margin: const EdgeInsets.all(8),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
+              child: Image.asset(
                 transport_option.photoUrl,
                 fit: BoxFit.cover,
                 color: Colors.black45,
@@ -44,11 +50,13 @@ class ImageButton extends StatelessWidget {
             ),
           ),
           Positioned(
-              child: selected ? Text(transport_option.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2!
-                      .copyWith(fontWeight: FontWeight.bold)) : Text(""),
+              child: selected
+                  ? Text(transport_option.name,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText2!
+                          .copyWith(fontWeight: FontWeight.bold))
+                  : Text(""),
               bottom: 20,
               left: 20),
         ],

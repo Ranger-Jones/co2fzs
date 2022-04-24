@@ -125,6 +125,34 @@ class FirestoreMethods {
     return res;
   }
 
+  Future<dynamic> routesToday() async {
+    User currentUser = FirebaseAuth.instance.currentUser!;
+    dynamic res = "Undefined Error";
+    try {
+      QuerySnapshot userRoutes = await _firestore
+          .collection("users")
+          .doc(currentUser.uid)
+          .collection("routes")
+          .get();
+      int routes = 0;
+      userRoutes.docs.forEach((doc) {
+        if (doc["date"] != null) {
+          {
+            if (DateFormat.yMMMMd().format(DateTime.now()).toString() ==
+                DateFormat.yMMMMd().format(doc["date"].toDate()).toString()) {
+              routes++;
+            }
+          }
+        }
+      });
+      res = routes;
+    } catch (e) {
+      res = e.toString();
+    }
+
+    return res;
+  }
+
   Future<String> uploadRoute({
     required String startAddress,
     required String endAddress,
