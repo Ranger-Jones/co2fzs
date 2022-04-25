@@ -16,13 +16,17 @@ class ArticleInfoRowCard extends StatelessWidget {
           MaterialPageRoute(
               builder: (_) => ArticleDetailScreen(article: article))),
       child: Container(
-        height: MediaQuery.of(context).size.width * 0.2,
-        width: MediaQuery.of(context).size.width * 0.42,
         child: Column(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(article.photoUrl, fit: BoxFit.fitWidth),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  article.photoUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             SizedBox(height: 10),
             AutoSizeText(
