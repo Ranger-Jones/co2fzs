@@ -133,7 +133,27 @@ class _ResponsiveLayoutState extends State<ResponsiveLayout> {
       );
     } else {
       user = Provider.of<UserProvider>(context).getUser;
-      return CircularProgressIndicator();
+      return Scaffold(
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              AuthButton(
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => MyApp()),
+                      (route) => false);
+                },
+                label: "Abmelden",
+              )
+            ],
+          ),
+        ),
+      );
     }
   }
 }

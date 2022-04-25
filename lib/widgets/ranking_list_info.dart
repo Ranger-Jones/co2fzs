@@ -62,7 +62,7 @@ class _RankingListInfoState extends State<RankingListInfo> {
                   ProfileScreen(otherProfileState: true, otherProfile: user))),
           child: RankingListRow(
               index: widget.index,
-              name: user!.firstname,
+              name: "${user!.firstname} ${user!.lastName[0].toUpperCase()}.",
               points: double.parse(user!.totalPoints.toStringAsFixed(2))),
         );
       case "School":
