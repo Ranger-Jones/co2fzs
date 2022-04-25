@@ -182,7 +182,8 @@ class AuthMethods {
     required String homeAddress2,
     required SchoolClass classId,
   }) async {
-    String res = "Some error";
+    String res =
+        "Es gab ein Problem. Möglicherweise ist deine Mail schon vergeben.";
 
     try {
       if (email.isNotEmpty ||
@@ -228,29 +229,28 @@ class AuthMethods {
             .uploadImageToStorage("profilePics", file, false);
 
         model.User user = model.User(
-          firstname: firstname,
-          lastName: lastname,
-          grade: schoolClass,
-          operationLevel: 1,
-          role: "user",
-          schoolId: schoolId,
-          schoolIdBlank: school["id"],
-          totalPoints: 0,
-          username: username,
-          photoUrl: photoUrl,
-          email: email,
-          uid: cred.user!.uid,
-          homeAddress: homeAddress,
-          homeAddress2: homeAddress2,
-          disqualified: false,
-          classId: classId.id,
-          contestId: school["contestId"],
-          transport: "",
-          activated: false,
-          datePublished: DateTime.now(),
-          dateUpdated: DateTime.now(),
-          friends: []
-        );
+            firstname: firstname,
+            lastName: lastname,
+            grade: schoolClass,
+            operationLevel: 1,
+            role: "user",
+            schoolId: schoolId,
+            schoolIdBlank: school["id"],
+            totalPoints: 0,
+            username: username,
+            photoUrl: photoUrl,
+            email: email,
+            uid: cred.user!.uid,
+            homeAddress: homeAddress,
+            homeAddress2: homeAddress2,
+            disqualified: false,
+            classId: classId.id,
+            contestId: school["contestId"],
+            transport: "",
+            activated: false,
+            datePublished: DateTime.now(),
+            dateUpdated: DateTime.now(),
+            friends: []);
         await _firestore
             .collection(
               "users",
@@ -265,9 +265,11 @@ class AuthMethods {
       }
     } on FirebaseAuthException catch (err) {
       if (err.code == "invalid-email") {
-        res = "The email is badly formatted.";
+        res =
+            "Die Email stimmt nicht mit dem Email-Standard überein, möglicherweise stimmt der Domain-Anbieter nicht oder du hast ein Leerzeichen hinter die Mail gesetzt. Bitte überprüfe deine Mail und versuche es erneut!";
       } else if (err.code == "weak-password") {
-        res = "Password should be better";
+        res =
+            "Das Passwort erfüllt nicht die erforderlichen Sicherheits-Standards: mind. 6 Zeichen. Bitte versuche es erneut mit einem besseren Passwort.";
       }
     } catch (err) {
       res = err.toString();

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:co2fzs/models/location.dart';
 import 'package:co2fzs/models/user.dart';
 import 'package:co2fzs/providers/user_provider.dart';
+import 'package:co2fzs/utils/utils.dart';
 import 'package:co2fzs/widgets/home_info.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -49,11 +50,21 @@ class _SelectHomeAddressState extends State<SelectHomeAddress> {
     bool locationRemove = false;
 
     if (location.id == selectedLocations[0].id) {
-      setState(() {
-        selectedLocations[0] = Location.getEmptyLocation();
-      });
       locationRemove = true;
-      widget.setLocation(Location.getEmptyLocation());
+      if (selectedLocations[1].id == "") {
+        setState(() {
+          selectedLocations[0] = Location.getEmptyLocation();
+        });
+
+        widget.setLocation(Location.getEmptyLocation());
+      } else {
+        widget.setLocation(selectedLocations[1]);
+        widget.setLocation2(Location.getEmptyLocation());
+        setState(() {
+          selectedLocations[0] = selectedLocations[1];
+          selectedLocations[1] = Location.getEmptyLocation();
+        });
+      }
     } else if (location.id == selectedLocations[1].id) {
       setState(() {
         selectedLocations[1] = Location.getEmptyLocation();
@@ -95,50 +106,68 @@ class _SelectHomeAddressState extends State<SelectHomeAddress> {
   @override
   Widget build(BuildContext context) {
     // User user = Provider.of<UserProvider>(context).getUser;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 24,
-      ),
-      child: Column(
-        children: [
-          StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection("locations")
-                .where(
-                  "schoolIdBlank",
-                  isEqualTo: widget.schoolId,
-                )
-                .orderBy("distanceFromSchool", descending: true)
-                .snapshots(),
-            builder: (context,
-                AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 24,
+        ),
+        child: Column(
+          children: [
+            (selectedLocations[0].name != "" || selectedLocations[1].name != "")
+                ? Row(
+                    children: [
+                      Text("Ausgewählt: ",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText2!
+                              .copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                          "${selectedLocations[0].name != "" ? selectedLocations[0].name : ""}, ${selectedLocations[1].name != "" ? selectedLocations[1].name : ""}")
+                    ],
+                  )
+                : Text("Keine Orte ausgewählt"),
+            SizedBox(height: 16),
+            Divider(),
+            StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection("locations")
+                  .where(
+                    "schoolIdBlank",
+                    isEqualTo: widget.schoolId,
+                  )
+                  .orderBy("distanceFromSchool", descending: true)
+                  .snapshots(),
+              builder: (context,
+                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              return ListView(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: snapshot.data!.docs
-                    .map((e) => InkWell(
-                          onTap: () => selectLocation(
-                            Location.fromSnap(
-                              e,
+                return ListView(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: snapshot.data!.docs
+                      .map((e) => InkWell(
+                            onTap: () => selectLocation(
+                              Location.fromSnap(
+                                e,
+                              ),
                             ),
-                          ),
-                          child: HomeInfo(
-                            location: Location.fromSnap(
-                              e,
+                            child: HomeInfo(
+                              location: Location.fromSnap(
+                                e,
+                              ),
+                              selectedLocations: selectedLocations,
                             ),
-                            selectedLocations: selectedLocations,
-                          ),
-                        ))
-                    .toList(),
-              );
-            },
-          ),
-        ],
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

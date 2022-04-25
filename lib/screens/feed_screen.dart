@@ -187,36 +187,36 @@ class _FeedScreenState extends State<FeedScreen> {
             SizedBox(
               height: 20,
             ),
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .orderBy("totalPoints", descending: true)
-                    .snapshots(),
-                builder: (context,
-                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
-                        snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+            // StreamBuilder(
+            //     stream: FirebaseFirestore.instance
+            //         .collection("users")
+            //         .orderBy("totalPoints", descending: true)
+            //         .snapshots(),
+            //     builder: (context,
+            //         AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+            //             snapshot) {
+            //       if (snapshot.connectionState == ConnectionState.waiting) {
+            //         return const Center(child: CircularProgressIndicator());
+            //       }
 
-                  int indexUser = 0;
-                  snapshot.data!.docs.asMap().entries.map((entry) {
-                    int entryKey = entry.key;
-                    var entryValue = entry.value.data();
-                    print("DOCS" + entryValue.toString());
-                    if (entryValue["uid"] == user.uid) {
-                      indexUser = entryKey;
-                    }
-                  });
+            //       int indexUser = 0;
+            //       snapshot.data!.docs.asMap().entries.map((entry) {
+            //         int entryKey = entry.key;
+            //         var entryValue = entry.value.data();
+            //         print("DOCS" + entryValue.toString());
+            //         if (entryValue["uid"] == user.uid) {
+            //           indexUser = entryKey;
+            //         }
+            //       });
 
-                  return Row(
-                    children: [
-                      CircleAvatar(
-                          backgroundColor: primaryColor,
-                          child: Text("${indexUser}"))
-                    ],
-                  );
-                }),
+            //       return Row(
+            //         children: [
+            //           CircleAvatar(
+            //               backgroundColor: primaryColor,
+            //               child: Text("${indexUser}"))
+            //         ],
+            //       );
+            //     }),
             // StreamBuilder(
             //   stream:
             //       FirebaseFirestore.instance.collection("users").snapshots(),
@@ -328,7 +328,7 @@ class _FeedScreenState extends State<FeedScreen> {
             ),
             SizedBox(height: 12),
             Container(
-              height: MediaQuery.of(context).size.height * 0.4,
+              height: MediaQuery.of(context).size.height * 0.35,
               width: double.infinity,
               child: StreamBuilder(
                   stream: FirebaseFirestore.instance
@@ -352,7 +352,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   }),
             ),
             SizedBox(
-              height: 20,
+              height: 12,
             ),
             Row(),
             Container(

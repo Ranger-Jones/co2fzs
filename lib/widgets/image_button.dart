@@ -52,10 +52,15 @@ class ImageButton extends StatelessWidget {
           Positioned(
               child: selected
                   ? Text(transport_option.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText2!
-                          .copyWith(fontWeight: FontWeight.bold))
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                                // bottomLeft
+                                offset: Offset(-1.5, -1.5),
+                                color: Colors.black),
+                          ]))
                   : Text(""),
               bottom: 20,
               left: 20),

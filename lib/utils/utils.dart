@@ -40,3 +40,28 @@ dynamic getRightDataType(var snapshot, String activeRanking) {
       return User.fromSnap(snapshot);
   }
 }
+
+class ModalDivider extends StatelessWidget {
+  const ModalDivider({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      child: Column(children: [
+        SizedBox(height: 20),
+        Container(
+          width: MediaQuery.of(context).size.width / 2,
+          height: 10,
+          decoration: ShapeDecoration(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            color: Colors.grey,
+          ),
+        ),
+        SizedBox(height: 20),
+      ]),
+    );
+  }
+}

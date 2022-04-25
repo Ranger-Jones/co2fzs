@@ -89,6 +89,13 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _isLoading = true;
     });
+    if (location1.name == "") {
+      showSnackBar(context, "Bitte wähle eine Heimatadresse aus");
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
     String res = await AuthMethods().signUpUser(
       email: _emailController.text,
       password: _passwordController.text,
@@ -325,22 +332,26 @@ class _SignupScreenState extends State<SignupScreen> {
                     isScrollControlled: true,
                     useRootNavigator: true,
                     builder: (_) {
-                      print("SCHOOLCLASS ${schoolClasses[0].name}");
                       SchoolClass schoolClassItem = schoolClasses.firstWhere(
                         (element) => element.name == schoolClass,
                       );
-                      print("SCHOOLCLASS ${schoolClassItem.name}");
-                      return SelectHomeAddress(
-                        classId: schoolClassItem.id,
-                        schoolId: school.id,
-                        setLocation: setLocation,
-                        setLocation2: setLocation2,
-                        location1: location1,
-                        location2: location2,
+
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.8,
+                        child: SelectHomeAddress(
+                          classId: schoolClassItem.id,
+                          schoolId: school.id,
+                          setLocation: setLocation,
+                          setLocation2: setLocation2,
+                          location1: location1,
+                          location2: location2,
+                        ),
                       );
                     },
                   ),
-              label: "Heimatadresse hinzufügen"),
+              label: (location1.name == "" && location2.name == "")
+                  ? "Heimatadresse hinzufügen"
+                  : "${location1.name}, ${location2.name}"),
           const SizedBox(height: 24),
           TextFieldInput(
             hintText: "Email",

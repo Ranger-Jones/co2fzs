@@ -245,13 +245,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   List<DateTime> getDaysInBetween(DateTime startDate, DateTime endDate) {
     List<DateTime> days = [];
-    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
-      DateTime _tmpDate = startDate.add(Duration(days: i));
-      if (DateFormat.E().format(_tmpDate).toString()[0] != "S") {
-        days.add(startDate.add(Duration(days: i)));
+    if (DateFormat.yMMMMd().format(startDate).toString() !=
+        DateFormat.yMMMMd().format(endDate).toString()) {
+      for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+        DateTime _tmpDate = startDate.add(Duration(days: i));
+        if (DateFormat.E().format(_tmpDate).toString()[0] != "S") {
+          days.add(startDate.add(Duration(days: i)));
+        }
       }
+    } else {
+      days.add(startDate);
     }
-    days.add(endDate);
     return days;
   }
 

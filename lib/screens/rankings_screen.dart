@@ -68,6 +68,8 @@ class _RankingsScreenState extends State<RankingsScreen> {
         currentDataStreamInline = _firestoreInstance
             .collection("users")
             .where("transport", isEqualTo: "Fahrrad")
+            .where("activated", isEqualTo: true)
+            .where("disqualified", isEqualTo: false)
             .orderBy("totalPoints", descending: true)
             .snapshots();
         break;
@@ -75,6 +77,8 @@ class _RankingsScreenState extends State<RankingsScreen> {
         currentDataStreamInline = _firestoreInstance
             .collection("users")
             .where("transport", isEqualTo: "ÖPNV")
+            .where("activated", isEqualTo: true)
+            .where("disqualified", isEqualTo: false)
             .orderBy("totalPoints", descending: true)
             .snapshots();
         break;
@@ -82,6 +86,8 @@ class _RankingsScreenState extends State<RankingsScreen> {
         currentDataStreamInline = _firestoreInstance
             .collection("users")
             .where("transport", isEqualTo: "Zu Fuß")
+            .where("activated", isEqualTo: true)
+            .where("disqualified", isEqualTo: false)
             .orderBy("totalPoints", descending: true)
             .snapshots();
         break;
@@ -89,6 +95,8 @@ class _RankingsScreenState extends State<RankingsScreen> {
         currentDataStreamInline = _firestoreInstance
             .collection("users")
             .where("transport", isEqualTo: "Auto")
+            .where("activated", isEqualTo: true)
+            .where("disqualified", isEqualTo: false)
             .orderBy("totalPoints", descending: true)
             .snapshots();
         break;
@@ -104,15 +112,29 @@ class _RankingsScreenState extends State<RankingsScreen> {
         currentDataStreamInline = _firestoreInstance
             .collection("users")
             .where("classId", isEqualTo: classId)
+            .where("activated", isEqualTo: true)
+            .where("disqualified", isEqualTo: false)
             .orderBy("totalPoints", descending: true)
             .snapshots();
         break;
 
+      case "Alle Schüler deiner Schule":
+        currentDataStreamInline = _firestoreInstance
+            .collection("users")
+            .where("schoolIdBlank", isEqualTo: schoolId)
+            .where("role", isEqualTo: "user")
+            .where("activated", isEqualTo: true)
+            .where("disqualified", isEqualTo: false)
+            .orderBy("totalPoints", descending: true)
+            .snapshots();
+        break;
       default:
         currentDataStreamInline = _firestoreInstance
             .collection("users")
             .where("schoolIdBlank", isEqualTo: schoolId)
             .where("role", isEqualTo: "user")
+            .where("activated", isEqualTo: true)
+            .where("disqualified", isEqualTo: false)
             .orderBy("totalPoints", descending: true)
             .snapshots();
         break;

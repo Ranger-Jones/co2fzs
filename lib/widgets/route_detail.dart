@@ -121,7 +121,9 @@ class _RouteDetailState extends State<RouteDetail> {
                           width: MediaQuery.of(context).size.width * 0.45,
                           height: MediaQuery.of(context).size.height * 0.1,
                           child: AutoSizeText(
-                            startLocation!.name,
+                            widget.route.driveBack
+                                ? widget.route.endAddress
+                                : startLocation!.name,
                             style: Theme.of(context).textTheme.headline3,
                             maxLines: 3,
                             textAlign: TextAlign.center,
@@ -136,7 +138,9 @@ class _RouteDetailState extends State<RouteDetail> {
                           width: MediaQuery.of(context).size.width * 0.45,
                           height: MediaQuery.of(context).size.height * 0.1,
                           child: AutoSizeText(
-                            widget.route.endAddress,
+                            widget.route.driveBack
+                                ? startLocation!.name
+                                : widget.route.endAddress,
                             style: Theme.of(context).textTheme.headline3,
                             maxLines: 3,
                             textAlign: TextAlign.center,

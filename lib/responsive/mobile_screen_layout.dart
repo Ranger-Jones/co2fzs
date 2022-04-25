@@ -63,7 +63,11 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           ),
           isScrollControlled: true,
           useRootNavigator: true,
-          builder: (_) => AddRouteScreen(),
+          builder: (_) => Container(
+            height: MediaQuery.of(context).size.height * 0.85,
+            width: double.infinity,
+            child: AddRouteScreen(),
+          ),
         ),
       ),
       PersistentBottomNavBarItem(
