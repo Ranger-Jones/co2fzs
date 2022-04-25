@@ -11,17 +11,21 @@ class ArticleInfoRowCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.width * 0.2,
-      width: MediaQuery.of(context).size.width * 0.4,
+      width: MediaQuery.of(context).size.width * 0.42,
       child: Column(
         children: [
+          
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.network(article.photoUrl),
+
+            child: Image.network(article.photoUrl, fit: BoxFit.fitWidth),
           ),
+          SizedBox(height: 10),
           AutoSizeText(
             article.title,
             maxLines: 2,
-            style: Theme.of(context).textTheme.headline3,
+            minFontSize: 10,
+            style: Theme.of(context).textTheme.bodyText2,
           )
         ],
       ),

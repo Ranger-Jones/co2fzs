@@ -27,11 +27,17 @@ class _RankingListInfoState extends State<RankingListInfo> {
   School? school;
   SchoolClass? schoolClass;
   User? user;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getRightType();
+  }
+
+  double averagePoints(double points, int activeUserCount) {
+    double _averagePoints = activeUserCount / points;
+    return double.parse(user!.totalPoints.toStringAsFixed(2));
   }
 
   void getRightType() {

@@ -326,25 +326,31 @@ class _FeedScreenState extends State<FeedScreen> {
                 textAlign: TextAlign.center,
               ),
             ),
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("articles")
-                    .snapshots(),
-                builder: (context,
-                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
-                        snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+            SizedBox(height: 12),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: double.infinity,
+              child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("articles")
+                      .snapshots(),
+                  builder: (context,
+                      AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                          snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                  return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => ArticleInfoRowCard(
-                        article: Article.fromSnap(snapshot.data!.docs[index])),
-                  );
-                }),
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => ArticleInfoRowCard(
+                          article:
+                              Article.fromSnap(snapshot.data!.docs[index])),
+                    );
+                  }),
+            ),
             SizedBox(
               height: 20,
             ),
