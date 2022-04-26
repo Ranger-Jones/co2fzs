@@ -96,6 +96,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
       return;
     }
+
     String res = await AuthMethods().signUpUser(
       email: _emailController.text,
       password: _passwordController.text,
