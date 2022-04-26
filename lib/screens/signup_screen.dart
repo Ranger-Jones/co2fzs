@@ -146,7 +146,7 @@ class _SignupScreenState extends State<SignupScreen> {
     } else {
       res.forEach((element) => schoolClasses.add(SchoolClass(
             name: element["name"],
-            totalPoints: element["totalPoints"],
+            totalPoints: double.parse("${element["totalPoints"]}"),
             schoolIdBlank: element["schoolIdBlank"],
             users: element["users"],
             id: element["id"],
