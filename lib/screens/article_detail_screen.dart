@@ -20,7 +20,8 @@ class ArticleDetailScreen extends StatelessWidget {
                 Text(article.title,
                     style: Theme.of(context).textTheme.headline3),
                 SizedBox(height: 12),
-                Text(article.text)
+                Text(article.text),
+                SizedBox(height: 12),
               ],
             ),
           ),

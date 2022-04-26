@@ -350,7 +350,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                   ),
               label: (location1.name == "" && location2.name == "")
-                  ? "Heimatadresse hinzufügen"
+                  ? "Wohnort hinzufügen"
                   : "${location1.name}, ${location2.name}"),
           const SizedBox(height: 24),
           TextFieldInput(

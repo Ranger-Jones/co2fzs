@@ -33,7 +33,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
     "ÖPNV",
     "zu Fuß",
   ];
-  String activeRanking = "Alle Schüler deiner Schule";
+  String activeRanking = "Started";
 
   bool _isLoading = true;
 
@@ -67,6 +67,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
       case "Fahrrad":
         currentDataStreamInline = _firestoreInstance
             .collection("users")
+            .where("schoolIdBlank", isEqualTo: schoolId)
             .where("transport", isEqualTo: "Fahrrad")
             .where("activated", isEqualTo: true)
             .where("disqualified", isEqualTo: false)
@@ -76,6 +77,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
       case "ÖPNV":
         currentDataStreamInline = _firestoreInstance
             .collection("users")
+            .where("schoolIdBlank", isEqualTo: schoolId)
             .where("transport", isEqualTo: "ÖPNV")
             .where("activated", isEqualTo: true)
             .where("disqualified", isEqualTo: false)
@@ -85,6 +87,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
       case "zu Fuß":
         currentDataStreamInline = _firestoreInstance
             .collection("users")
+            .where("schoolIdBlank", isEqualTo: schoolId)
             .where("transport", isEqualTo: "Zu Fuß")
             .where("activated", isEqualTo: true)
             .where("disqualified", isEqualTo: false)
@@ -155,6 +158,14 @@ class _RankingsScreenState extends State<RankingsScreen> {
     if (_isLoading || user.username == "none") {
       return Center(
         child: CircularProgressIndicator(),
+      );
+    }
+
+    if (activeRanking == "Started") {
+      getRightStream(
+        value: "Alle Schüler deiner Schule",
+        schoolId: user.schoolIdBlank,
+        classId: user.classId,
       );
     }
 
