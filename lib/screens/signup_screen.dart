@@ -89,6 +89,14 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _isLoading = true;
     });
+    int _emailLength = _emailController.text.length;
+    if (_emailController.text.contains(" ")) {
+      showSnackBar(context, "Entferne das Leerzeichen hinter deiner Mail.");
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
     if (location1.name == "") {
       showSnackBar(context, "Bitte wähle eine Heimatadresse aus");
       setState(() {
@@ -96,6 +104,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
       return;
     }
+
     String res = await AuthMethods().signUpUser(
       email: _emailController.text,
       password: _passwordController.text,
@@ -146,7 +155,7 @@ class _SignupScreenState extends State<SignupScreen> {
     } else {
       res.forEach((element) => schoolClasses.add(SchoolClass(
             name: element["name"],
-            totalPoints: element["totalPoints"],
+            totalPoints: double.parse("${element["totalPoints"]}"),
             schoolIdBlank: element["schoolIdBlank"],
             users: element["users"],
             id: element["id"],

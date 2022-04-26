@@ -137,7 +137,7 @@ class _SelectHomeAddressState extends State<SelectHomeAddress> {
                     "schoolIdBlank",
                     isEqualTo: widget.schoolId,
                   )
-                  .orderBy("distanceFromSchool", descending: true)
+                  .orderBy("name", descending: false)
                   .snapshots(),
               builder: (context,
                   AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
