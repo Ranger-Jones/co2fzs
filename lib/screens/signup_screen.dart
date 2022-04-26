@@ -89,6 +89,14 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _isLoading = true;
     });
+    int _emailLength = _emailController.text.length;
+    if (_emailController.text.contains(" ")) {
+      showSnackBar(context, "Entferne das Leerzeichen hinter deiner Mail.");
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
     if (location1.name == "") {
       showSnackBar(context, "Bitte wähle eine Heimatadresse aus");
       setState(() {
