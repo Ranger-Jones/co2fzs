@@ -48,3 +48,4 @@ app.*.map.json
 
 # keys
 /lib/utils/config.dart
+node_modules

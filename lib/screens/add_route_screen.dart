@@ -146,7 +146,6 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
     User user = Provider.of<UserProvider>(context, listen: false).getUser;
     setState(() {
       _isLoading = true;
-      _contestLoadingAttempt++;
     });
 
     var res = await FirestoreMethods().catchLocation(

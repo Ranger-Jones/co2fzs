@@ -5,11 +5,13 @@ class AuthButton extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onTap;
   final String label;
+  final Color color;
   const AuthButton({
     Key? key,
     this.isLoading = false,
     required this.onTap,
     required this.label,
+    this.color = primaryColor,
   }) : super(key: key);
 
   @override
@@ -20,7 +22,7 @@ class AuthButton extends StatelessWidget {
         child: isLoading
             ? const Center(
                 child: CircularProgressIndicator(
-                  color: primaryColor,
+                  color: Colors.white,
                 ),
               )
             : Text(
@@ -33,13 +35,13 @@ class AuthButton extends StatelessWidget {
         width: double.infinity,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: const ShapeDecoration(
-          shape: RoundedRectangleBorder(
+        decoration: ShapeDecoration(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(6),
             ),
           ),
-          color: primaryColor,
+          color: color,
         ),
       ),
     );

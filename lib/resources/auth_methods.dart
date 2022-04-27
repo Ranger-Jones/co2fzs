@@ -169,6 +169,17 @@ class AuthMethods {
     return schoolClass;
   }
 
+  Future<String> sendResetPasswordMail(String email) async {
+    String res = "Undefined Error";
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      res = "Zurücksetzungsmail erfolgreich gesendet";
+    } catch (e) {
+      res = e.toString();
+    }
+    return res;
+  }
+
   Future<String> signUpUser({
     required String email,
     required String password,
