@@ -266,16 +266,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => index = 0);
     _routesToday = routes
         .map((element) {
-          if (DateFormat.yMMMMd().format(element.date.toDate()).toString() ==
-              DateFormat.yMMMMd().format(date).toString()) {
-            if (!_routesToday.contains(element)) {
-              if (index < 2) {
-                index++;
-                return element;
+          if (element != null) {
+            if (DateFormat.yMMMMd().format(element.date.toDate()).toString() ==
+                DateFormat.yMMMMd().format(date).toString()) {
+              if (!_routesToday.contains(element)) {
+                if (index < 2) {
+                  index++;
+                  return element;
+                } else {
+                  return model.Route.emptyRoute();
+                }
               } else {
                 return model.Route.emptyRoute();
               }
+            } else {
+              return model.Route.emptyRoute();
             }
+          } else {
+            return model.Route.emptyRoute();
           }
         })
         .cast<model.Route>()

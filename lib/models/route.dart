@@ -25,18 +25,20 @@ class Route {
     required this.dateUpdated,
   });
 
-  static Route emptyRoute() => Route(
-        date: DateTime.now(),
-        distance: 0,
-        driveBack: false,
-        endAddress: "",
-        points: 0,
-        startAddress: "",
-        id: "",
-        transport: "",
-        datePublished: DateTime.now(),
-        dateUpdated: DateTime.now(),
-      );
+  static Route emptyRoute() {
+    return Route(
+      date: DateTime.now(),
+      distance: 0,
+      driveBack: false,
+      endAddress: "",
+      points: 0,
+      startAddress: "",
+      id: "",
+      transport: "",
+      datePublished: DateTime.now(),
+      dateUpdated: DateTime.now(),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "date": date,

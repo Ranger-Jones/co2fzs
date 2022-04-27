@@ -1,5 +1,6 @@
 import 'package:co2fzs/models/transport_option.dart';
 import 'package:co2fzs/utils/colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ImageButton extends StatelessWidget {
@@ -33,8 +34,10 @@ class ImageButton extends StatelessWidget {
                 ? MediaQuery.of(context).size.width * 0.22
                 : MediaQuery.of(context).size.width * 0.43,
             decoration: BoxDecoration(
-              border:
-                  Border.all(width: selected ? 2 : 0.1, color: primaryColor),
+              border: Border.all(
+                width: selected ? (!kIsWeb ? 2 : 5) : 0.1,
+                color: primaryColor,
+              ),
               borderRadius: BorderRadius.circular(11),
             ),
             margin: const EdgeInsets.all(8),
@@ -44,17 +47,19 @@ class ImageButton extends StatelessWidget {
                 transport_option.photoUrl,
                 fit: BoxFit.cover,
                 color: Colors.black45,
-                colorBlendMode:
-                    !selected ? BlendMode.dstOut : BlendMode.lighten,
+                colorBlendMode: !kIsWeb
+                    ? (!selected ? BlendMode.dstOut : BlendMode.lighten)
+                    : BlendMode.lighten,
               ),
             ),
           ),
           Positioned(
               child: selected
                   ? Text(transport_option.name,
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                      style: Theme.of(context).textTheme.headline3!.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
+                          fontSize: 35,
                           shadows: [
                             Shadow(
                                 // bottomLeft
@@ -62,8 +67,8 @@ class ImageButton extends StatelessWidget {
                                 color: Colors.black),
                           ]))
                   : Text(""),
-              bottom: 20,
-              left: 20),
+              bottom: 30,
+              left: 30),
         ],
       ),
     );

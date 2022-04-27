@@ -1,3 +1,5 @@
+import 'package:co2fzs/screens/forgot_password_screen.dart';
+import 'package:co2fzs/widgets/auth_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:co2fzs/resources/auth_methods.dart';
@@ -56,9 +58,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void navigateToSignup() {
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => SignupScreen(),
+      ),
+    );
+  }
+
+  void navigateToForgotPassword() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ForgotPasswordScreen(),
       ),
     );
   }
@@ -67,70 +77,49 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Flexible(child: Container(), flex: 2),
-                Image.asset(
-                  "assets/images/logo.png",
-                  height: 180,
-                ),
-                const SizedBox(height: 64),
-                TextFieldInput(
-                  hintText: "Enter Email",
-                  textInputType: TextInputType.emailAddress,
-                  textEditingController: _emailController,
-                ),
-                const SizedBox(height: 24),
-                TextFieldInput(
-                  hintText: "Enter Password",
-                  textInputType: TextInputType.emailAddress,
-                  textEditingController: _passwordController,
-                  isPass: true,
-                ),
-                const SizedBox(height: 24),
-                InkWell(
-                  onTap: loginUser,
-                  child: Container(
-                    child: _isLoading
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                              color: primaryColor,
-                            ),
-                          )
-                        : const Text("Log in"),
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: const ShapeDecoration(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(6),
-                        ),
-                      ),
-                      color: blueColor,
-                    ),
+        child: SingleChildScrollView(
+          child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 44),
+                  Image.asset(
+                    "assets/images/logo.png",
+                    height: 180,
                   ),
-                ),
-                const SizedBox(height: 12),
-                Flexible(child: Container(), flex: 2),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: navigateToSignup,
-                      child: Container(
-                          child: const Text("Noch keinen Account?",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          padding: const EdgeInsets.symmetric(vertical: 8)),
-                    )
-                  ],
-                )
-              ],
-            )),
+                  const SizedBox(height: 64),
+                  TextFieldInput(
+                    hintText: "Email eingeben",
+                    textInputType: TextInputType.emailAddress,
+                    textEditingController: _emailController,
+                  ),
+                  const SizedBox(height: 24),
+                  TextFieldInput(
+                    hintText: "Password eingeben",
+                    textInputType: TextInputType.emailAddress,
+                    textEditingController: _passwordController,
+                    isPass: true,
+                  ),
+                  const SizedBox(height: 24),
+                  AuthButton(
+                      onTap: loginUser,
+                      label: "Einloggen",
+                      isLoading: _isLoading),
+                  const SizedBox(height: 12),
+                  Divider(),
+                  const SizedBox(height: 12),
+                  AuthButton(
+                      onTap: navigateToSignup, label: "Account erstellen"),
+                  const SizedBox(height: 12),
+                  AuthButton(
+                      onTap: navigateToForgotPassword,
+                      label: "Passwort vergessen?"),
+                ],
+              )),
+        ),
       ),
     );
   }
