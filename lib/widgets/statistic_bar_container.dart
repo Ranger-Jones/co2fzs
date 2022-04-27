@@ -3,7 +3,7 @@ import 'package:co2fzs/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class StatisticBarContainer extends StatelessWidget {
+class StatisticBarContainer extends StatefulWidget {
   final DateTime date;
   final double totalPoints;
   final double dailyPoints;
@@ -15,29 +15,35 @@ class StatisticBarContainer extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<StatisticBarContainer> createState() => _StatisticBarContainerState();
+}
+
+class _StatisticBarContainerState extends State<StatisticBarContainer> {
+  @override
   Widget build(BuildContext context) {
+    double _barHeight = MediaQuery.of(context).size.height * 0.34;
+    double factorHeight = (widget.dailyPoints / widget.totalPoints);
     return Container(
       width: 40,
       margin: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
           Container(
-            height: MediaQuery.of(context).size.height * 0.34,
+            height: _barHeight,
             child: FractionallySizedBox(
-              heightFactor: dailyPoints / totalPoints,
+              heightFactor: factorHeight,
               widthFactor: 1.0,
               alignment: Alignment.bottomCenter,
               child: Container(
-              
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                    color: primaryColor,
+                  color: primaryColor,
                 ),
               ),
             ),
           ),
           Text(
-            DateFormat("E").format(date).toString()[0],
+            DateFormat("E").format(widget.date).toString()[0],
             textAlign: TextAlign.center,
           )
         ],

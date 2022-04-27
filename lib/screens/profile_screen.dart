@@ -61,12 +61,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _scrollController.dispose();
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
   void loadSchool(BuildContext context) async {
     User? user;
     if (widget.otherProfileState) {
@@ -84,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         res == "SchulID ist inkorrekt" ||
         res is String) {
       showSnackBar(context, res);
-      loadSchool(context);
+      return loadSchool(context);
     } else {
       school = School(
         schoolId: res["schoolId"],
@@ -179,6 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _isLoading = true;
       _routeLoadingAttempt++;
+      routes = [];
     });
 
     if (_routeLoadingAttempt > 4) {
@@ -233,12 +228,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     int largestValue = 0;
     String mostUsedTransport = "Auto";
 
-    transportListCount.forEach((key, value) {
-      if (value > largestValue) {
-        largestValue = value;
-        mostUsedTransport = key;
-      }
-    });
+    transportListCount.forEach(
+      (key, value) {
+        if (value > largestValue) {
+          largestValue = value;
+          mostUsedTransport = key;
+        }
+      },
+    );
 
     return mostUsedTransport;
   }
@@ -260,14 +257,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   double dailyPoints(DateTime date) {
-    var _routesToday = routes.where((element) =>
-        DateFormat.yMMMMd().format(element.date.toDate()).toString() ==
-        DateFormat.yMMMMd().format(date).toString());
+    List<model.Route> _routesToday = [];
 
+    setState(() {
+      _routesToday = [];
+    });
+    int index = 0;
+    setState(() => index = 0);
+    _routesToday = routes
+        .map((element) {
+          if (DateFormat.yMMMMd().format(element.date.toDate()).toString() ==
+              DateFormat.yMMMMd().format(date).toString()) {
+            if (!_routesToday.contains(element)) {
+              if (index < 2) {
+                index++;
+                return element;
+              } else {
+                return model.Route.emptyRoute();
+              }
+            }
+          }
+        })
+        .cast<model.Route>()
+        .toList();
     double dailyPoints = 0;
+    setState(() {
+      dailyPoints = 0;
+    });
 
+    index = 0;
+    print("${_routesToday.toString()}");
     _routesToday.forEach((element) {
-      dailyPoints += element.points;
+      dailyPoints += element != null ? element.points : 0;
+// ${DateFormat.yMMMMd().format(element.date.toDate()).toString()}
+      // print(
+      //     "INDEX ${index}:  | ${dailyPoints} | ${element.toJson().toString()}");
     });
 
     return dailyPoints;
@@ -299,7 +323,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       loadContest(context);
     }
     if (!_routesLoaded && _routeLoadingAttempt < 5) {
-      loadRoutes(context);
+      if (routes.isEmpty) {
+        loadRoutes(context);
+      }
     }
     if (!_schoolClassLoaded) {
       loadClass(context);
@@ -346,7 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Row(
                               children: [
                                 Text(user.firstname),
-                                Text(" ${user.lastName}"),
+                                Text(" ${user.lastName[0]}."),
                               ],
                             ),
                             Text("@${user.username}",

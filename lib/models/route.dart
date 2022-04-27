@@ -25,6 +25,19 @@ class Route {
     required this.dateUpdated,
   });
 
+  static Route emptyRoute() => Route(
+        date: DateTime.now(),
+        distance: 0,
+        driveBack: false,
+        endAddress: "",
+        points: 0,
+        startAddress: "",
+        id: "",
+        transport: "",
+        datePublished: DateTime.now(),
+        dateUpdated: DateTime.now(),
+      );
+
   Map<String, dynamic> toJson() => {
         "date": date,
         "id": id,
@@ -47,7 +60,7 @@ class Route {
       endAddress: snapshot["endAddress"],
       points: double.parse("${snapshot["points"]}"),
       startAddress: snapshot["startAddress"],
-      distance:  double.parse("${snapshot["distance"]}"),
+      distance: double.parse("${snapshot["distance"]}"),
       driveBack: snapshot["driveBack"],
       transport: snapshot["transport"],
       dateUpdated: snapshot["dateUpdated"],

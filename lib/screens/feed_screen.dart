@@ -280,7 +280,9 @@ class _FeedScreenState extends State<FeedScreen> {
                         ),
                         isScrollControlled: true,
                         useRootNavigator: true,
-                        builder: (_) => AddRouteScreen(),
+                        builder: (_) => Container(
+                            height: MediaQuery.of(context).size.height * 0.85,
+                            child: AddRouteScreen()),
                       ),
                       child: DottedBorder(
                         child: Container(
