@@ -68,16 +68,19 @@ class _RankingListInfoState extends State<RankingListInfo> {
         );
       case "School":
         return InkWell(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => SchoolDetailScreen(school: school!),
-            ),
-          ),
-          child: RankingListRow(
+            onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => SchoolDetailScreen(school: school!),
+                  ),
+                ),
+            child: RankingListRow(
               index: widget.index,
               name: school!.schoolname,
-              points: double.parse(school!.totalPoints.toStringAsFixed(2))),
-        );
+              points: school!.users.length > 0
+                  ? double.parse((school!.totalPoints / school!.users.length)
+                      .toStringAsFixed(2))
+                  : 0,
+            ));
       case "SchoolClass":
         print(schoolClass!.totalPoints.toStringAsFixed(2));
         return InkWell(
@@ -89,9 +92,12 @@ class _RankingListInfoState extends State<RankingListInfo> {
           child: RankingListRow(
             index: widget.index,
             name: schoolClass!.name,
-            points: double.parse(
-              schoolClass!.totalPoints.toStringAsFixed(2),
-            ),
+            points: schoolClass!.users.length > 0
+                ? double.parse(
+                    (schoolClass!.totalPoints / schoolClass!.users.length)
+                        .toStringAsFixed(2),
+                  )
+                : 0,
           ),
         );
 

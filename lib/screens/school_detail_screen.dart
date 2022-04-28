@@ -29,13 +29,13 @@ class SchoolDetailScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       TableItem(info: school.location, label: "Adresse"),
-                      TableItem(info: "${school.users.length}", label: "Schüler"),
-                      TableItem(info: "${school.classes.length}", label: "Klassen"),
-                      TableItem(info: "${school.schoolId}", label: "Schul ID"),
+                      TableItem(
+                          info: "${school.users.length}", label: "Schüler"),
+                      TableItem(
+                          info: "${school.classes.length}", label: "Klassen"),
                     ],
                   ),
                 ),
-                
               ],
             ),
           ),

@@ -44,7 +44,7 @@ class Location {
       name: snapshot["name"],
       datePublished: snapshot["datePublished"],
       dateUpdated: snapshot["dateUpdated"],
-      distanceFromSchool: snapshot["distanceFromSchool"],
+      distanceFromSchool: double.parse("${snapshot["distanceFromSchool"]}"),
       id: snapshot["id"],
       photoUrl: snapshot["photoUrl"],
     );

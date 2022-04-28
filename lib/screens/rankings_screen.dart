@@ -239,16 +239,75 @@ class _RankingsScreenState extends State<RankingsScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
+
+                  List<Map> schoolPoints = [];
+                  List<Map> schoolClassPoints = [];
+
+                  int itemListLength = 0;
+
+                  bool useOtherSetup = false;
+
+                  if (activeRanking == "Schulen") {
+                    snapshot.data!.docs.forEach((e) {
+                      School _school = School.fromSnap(e);
+                      double averagePoints =
+                          (_school.users.length > 0 && _school.totalPoints > 0)
+                              ? (_school.totalPoints / _school.users.length)
+                              : 0;
+                      schoolPoints.add(
+                          {"averagePoints": averagePoints, "school": _school});
+                    });
+                    itemListLength = schoolPoints.length - 1;
+                    schoolClassPoints.sort((sc1, sc2) {
+                      var r =
+                          sc2["averagePoints"].compareTo(sc1["averagePoints"]);
+                      if (r != 0) return r;
+                      return sc1["school"].name.compareTo(sc2["school"].name);
+                    });
+                    useOtherSetup = true;
+                    print("SCHOOLPOINTSLIST ${schoolPoints.toString()}");
+                  } else if (activeRanking == "Klassen") {
+                    snapshot.data!.docs.forEach((e) {
+                      SchoolClass _schoolClass = SchoolClass.fromSnap(e);
+                      double averagePoints = _schoolClass.users.length > 0
+                          ? (_schoolClass.totalPoints /
+                              _schoolClass.users.length)
+                          : 0;
+                      schoolClassPoints.add({
+                        "averagePoints": averagePoints,
+                        "schoolClass": _schoolClass
+                      });
+                    });
+                    itemListLength = schoolClassPoints.length - 1;
+                    schoolClassPoints.sort((sc1, sc2) {
+                      var r =
+                          sc2["averagePoints"].compareTo(sc1["averagePoints"]);
+                      if (r != 0) return r;
+                      return sc1["schoolClass"]
+                          .name
+                          .compareTo(sc2["schoolClass"].name);
+                    });
+                    useOtherSetup = true;
+                    print(
+                        "SCHOOL|CLASS|POINTS|LIST ${schoolClassPoints.toString()}");
+                  } else {
+                    itemListLength = snapshot.data!.docs.length;
+                  }
+
                   return ListView.builder(
                     primary: false,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: snapshot.data!.docs.length,
+                    itemCount: itemListLength,
                     shrinkWrap: true,
                     itemBuilder: (context, index) => Column(
                       children: [
                         RankingListInfo(
-                          snap: getRightDataType(
-                              snapshot.data!.docs[index], activeRanking),
+                          snap: useOtherSetup
+                              ? (schoolClassPoints.isNotEmpty
+                                  ? schoolClassPoints[index]["schoolClass"]
+                                  : schoolPoints[index]["school"])
+                              : getRightDataType(
+                                  snapshot.data!.docs[index], activeRanking),
                           index: index + 1,
                         ),
                       ],

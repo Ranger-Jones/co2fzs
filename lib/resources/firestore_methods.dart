@@ -81,14 +81,14 @@ class FirestoreMethods {
       await _firestore
           .collection("admin")
           .doc(schoolIdBlank)
-          .update({"totalPoints": FieldValue.increment(points)});
+          .update({"totalPoints": FieldValue.increment(-points)});
 
       await _firestore
           .collection("admin")
           .doc(schoolIdBlank)
           .collection("classes")
           .doc(classId)
-          .update({"totalPoints": FieldValue.increment(points)});
+          .update({"totalPoints": FieldValue.increment(-points)});
       res = "success";
     } catch (e) {
       res = e.toString();
