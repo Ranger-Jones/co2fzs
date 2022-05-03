@@ -3,11 +3,14 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:co2fzs/models/location.dart';
 import 'package:co2fzs/models/post.dart';
-import 'package:co2fzs/models/route.dart';
+import 'package:co2fzs/models/route.dart' as model;
+import 'package:co2fzs/models/schoolClass.dart';
 import 'package:co2fzs/models/transport_option.dart';
 import 'package:co2fzs/resources/storage_methods.dart';
 import 'package:co2fzs/utils/dimensions.dart';
+import 'package:co2fzs/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -172,7 +175,8 @@ class FirestoreMethods {
         .get();
     bool alreadyExists = false;
 
-    List<Route> routes = userRoutes.docs.map((e) => Route.fromSnap(e)).toList();
+    List<model.Route> routes =
+        userRoutes.docs.map((e) => model.Route.fromSnap(e)).toList();
 
     int carCount = routes.where((element) => element.transport == "car").length;
     int ptCount = routes.where((element) => element.transport == "pt").length;
@@ -229,7 +233,7 @@ class FirestoreMethods {
       Location location = Location.fromSnap(locationRes);
 
       points = location.distanceFromSchool * transportOption!.scoreMultiplier;
-      Route route = Route(
+      model.Route route = model.Route(
         date: date,
         distance: location.distanceFromSchool,
         driveBack: driveBack,
@@ -298,6 +302,69 @@ class FirestoreMethods {
         return res;
       } else {
         return classesSnapshots.docs;
+      }
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
+  }
+
+  Future<SchoolClass> catchClassPrototype(
+      {required String schoolIdBlank,
+      required String classId,
+      required BuildContext context}) async {
+    String res = "Undefined Error";
+    SchoolClass? schoolClass;
+    try {
+      var res = await _firestore
+          .collection("admin")
+          .doc(schoolIdBlank)
+          .collection("classes")
+          .doc(classId)
+          .get();
+
+      schoolClass = SchoolClass.fromSnap(res);
+      print("STAGE 2 CLASSES ${schoolClass.name}");
+    } catch (err) {
+      res = err.toString();
+      // showSnackBar(context, res);
+      schoolClass = SchoolClass.emptySchoolClass();
+    }
+    return schoolClass;
+  }
+
+  Future<List<SchoolClass>> catchClassesPrototype(
+      {required String schoolIdBlank,
+      required List<dynamic> classIds,
+      required BuildContext context}) async {
+    List<SchoolClass> classes = [];
+
+    try {
+      classIds.forEach((e) async => classes.add(await catchClassPrototype(
+          classId: e, context: context, schoolIdBlank: schoolIdBlank)));
+      classes.removeWhere((element) => element.name.isEmpty);
+      // await Future.delayed(Duration(milliseconds: 5000));
+      print("STAGE 2 CLASSES ${classes}");
+    } catch (err) {
+      showSnackBar(context, err.toString());
+    }
+    return classes;
+  }
+
+  Future<dynamic> catchBuildings({required String schoolIdBlank}) async {
+    String res = "Undefined Error";
+    try {
+      QuerySnapshot buildingsSnapshots = await _firestore
+          .collection("admin")
+          .doc(schoolIdBlank)
+          .collection("buildings")
+          .get();
+
+      if (buildingsSnapshots.docs.length < 1) {
+        res = "Keine Gebäude gefunden.";
+        return res;
+      } else {
+        return buildingsSnapshots.docs;
       }
     } catch (err) {
       res = err.toString();

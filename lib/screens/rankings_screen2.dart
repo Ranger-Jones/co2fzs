@@ -35,6 +35,8 @@ class _RankingsScreenState extends State<RankingsScreen> {
   ];
   String activeRanking = "Started";
 
+  SchoolClass? schoolClass;
+
   bool _isLoading = true;
 
   @override
@@ -176,33 +178,8 @@ class _RankingsScreenState extends State<RankingsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              Container(
-                margin: const EdgeInsets.only(left: 15, top: 75),
-                child: Text(
-                  "Ranking",
-                  style: Theme.of(context).textTheme.headline1,
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                height: 50,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  primary: false,
-                  shrinkWrap: true,
-                  children: rankingOptions
-                      .map(
-                        (e) => FilterButton(
-                          label: e,
-                          onTap: getRightStream,
-                          schoolId: user.schoolIdBlank,
-                          classId: user.classId,
-                          activeRanking: activeRanking,
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
+              
+              
               SizedBox(height: 20),
               // DropdownButton<String>(
               //   value: activeRanking,
@@ -258,13 +235,11 @@ class _RankingsScreenState extends State<RankingsScreen> {
                           {"averagePoints": averagePoints, "school": _school});
                     });
                     itemListLength = schoolPoints.length - 1;
-                    schoolPoints.sort((sc1, sc2) {
+                    schoolClassPoints.sort((sc1, sc2) {
                       var r =
                           sc2["averagePoints"].compareTo(sc1["averagePoints"]);
                       if (r != 0) return r;
-                      return sc1["school"]
-                          .schoolname
-                          .compareTo(sc2["school"].schoolname);
+                      return sc1["school"].name.compareTo(sc2["school"].name);
                     });
                     useOtherSetup = true;
                     print("SCHOOLPOINTSLIST ${schoolPoints.toString()}");

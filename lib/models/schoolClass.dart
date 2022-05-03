@@ -21,6 +21,16 @@ class SchoolClass {
     this.photoUrl = "",
   });
 
+ static SchoolClass emptySchoolClass() => SchoolClass(
+        name: "",
+        totalPoints: 0,
+        schoolIdBlank: "",
+        users: [],
+        id: "",
+        photoUrl: "",
+        userCount: 0,
+      );
+
   Map<String, dynamic> toJson() => {
         "name": name,
         "totalPoints": totalPoints,

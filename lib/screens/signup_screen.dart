@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:co2fzs/models/location.dart';
 import 'package:co2fzs/models/school.dart';
 import 'package:co2fzs/models/schoolClass.dart';
+import 'package:co2fzs/models/school_building.dart';
 import 'package:co2fzs/resources/firestore_methods.dart';
 import 'package:co2fzs/widgets/auth_button.dart';
 import 'package:co2fzs/widgets/select_home_address_list.dart';
@@ -38,14 +39,18 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _homeAddressController = TextEditingController();
   final TextEditingController _homeAddress2Controller = TextEditingController();
 
-  late String schoolClass;
+  String schoolClass = "";
+  String schoolBuilding = "";
+  String schoolBuildingId = "";
   Uint8List? _image;
 
   bool _isLoading = false;
+  bool _isLoadingScreen = false;
   int registrationStep = 1;
 
   List<String> classNames = [];
   List<SchoolClass> schoolClasses = [];
+  List<SchoolBuilding> schoolBuildings = [];
 
   late School school;
   Location location1 = Location.getEmptyLocation();
@@ -194,16 +199,29 @@ class _SignupScreenState extends State<SignupScreen> {
             schoolname: res["schoolname"],
             location: res["location"],
             classes: res["classes"],
-            totalPoints: res["totalPoints"],
+            totalPoints: double.parse("${res["totalPoints"]}"),
             users: res["users"],
             contestId: res["contestId"],
           );
-          catchClasses();
+          // catchClasses();
+          loadSchoolBuildings();
+          // await Future.delayed(Duration(milliseconds: 5000));
+
         }
       } else {
         showSnackBar(context, "Bitte alle Felder ausfüllen!");
       }
     } else if (registrationStep == 2) {
+      setState(() {
+        _isLoadingScreen = true;
+      });
+
+      loadClasses();
+      setState(() {
+        _isLoadingScreen = false;
+        registrationStep++;
+      });
+    } else if (registrationStep == 3) {
       setState(() {
         _isLoading = true;
       });
@@ -217,6 +235,107 @@ class _SignupScreenState extends State<SignupScreen> {
     }
     setState(() {
       _isLoading = false;
+    });
+  }
+
+  loadSchoolBuildings() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      var res = await FirestoreMethods().catchBuildings(
+        schoolIdBlank: school.id,
+      );
+
+      if (res is String) {
+        showSnackBar(context, res);
+      } else {
+        res.forEach(
+            (element) => schoolBuildings.add(SchoolBuilding.fromSnap(element)));
+        setState(() {
+          schoolBuilding = schoolBuildings[0].buildingName;
+          schoolBuildingId = schoolBuildings[0].id;
+        });
+      }
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+    setState(() {
+      _isLoading = false;
+      registrationStep++;
+      if (schoolBuilding == "") {
+        loadClasses();
+        registrationStep++;
+      }
+    });
+  }
+
+  loadClasses() async {
+    List<SchoolClass> _classes = [];
+    setState(() {
+      _isLoadingScreen = true;
+      schoolClasses = [];
+      classNames = [];
+    });
+
+    SchoolBuilding? _schoolBuilding;
+
+    List<dynamic> classIds = [];
+    try {
+      if (schoolBuildingId.isNotEmpty) {
+        if (school.id != schoolBuildingId) {
+          _schoolBuilding = schoolBuildings
+              .firstWhere((element) => schoolBuildingId == element.id);
+          classIds = _schoolBuilding.classes;
+        } else {
+          classIds = school.classes.map((element) => element).toList();
+          schoolBuildings.forEach(
+            (schoolBuilding) => schoolBuilding.classes.forEach((classId) {
+              classIds.remove(
+                classId,
+              );
+              print(classId);
+            }),
+          );
+        }
+      } else {
+        classIds = school.classes;
+      }
+
+      print(classIds);
+      setState(() {
+        _isLoadingScreen = true;
+      });
+      _classes = await FirestoreMethods().catchClassesPrototype(
+        schoolIdBlank: school.id,
+        classIds: classIds,
+        context: context,
+      );
+      setState(() {
+        _isLoadingScreen = true;
+      });
+      await Future.delayed(Duration(milliseconds: 1800));
+      _classes.removeWhere((element) => element.name == "");
+
+      classNames = _classes.map((element) => element.name).toList();
+
+      print(_classes);
+
+      await Future.delayed(Duration(milliseconds: 800))
+          .then((value) => setState(() {
+                schoolClass = classNames[0];
+                _isLoadingScreen = false;
+              }));
+    } catch (e) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        showSnackBar(context, e.toString());
+      });
+    }
+
+    setState(() {
+      _isLoadingScreen = false;
+
+      schoolClasses = _classes;
     });
   }
 
@@ -250,6 +369,66 @@ class _SignupScreenState extends State<SignupScreen> {
           )
         ];
       case 2:
+        if (schoolBuildings == []) {
+          setState(() {
+            registrationStep++;
+          });
+        }
+        List<DropdownMenuItem<String>> buildingDropDownList = schoolBuildings
+            .map<DropdownMenuItem<String>>((SchoolBuilding value) {
+          return DropdownMenuItem<String>(
+            value: value.id,
+            child: Text(value.buildingName),
+          );
+        }).toList();
+        buildingDropDownList.add(DropdownMenuItem<String>(
+          value: school.id,
+          child: Text(school.schoolname),
+        ));
+        return [
+          const SizedBox(height: 64),
+          Text(
+            "Anscheinend besitzt deine Schule mehrere Gebäude. Bitte wähle ein Gebäude aus.",
+            style: Theme.of(context)
+                .textTheme
+                .bodyText2!
+                .copyWith(fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          DropdownButton<String>(
+            value: schoolBuildingId,
+            icon: const Icon(Icons.arrow_downward, color: primaryColor),
+            elevation: 16,
+            style: Theme.of(context).textTheme.bodyText2,
+            isExpanded: true,
+            alignment: Alignment.center,
+            underline: Container(
+              height: 2,
+              color: primaryColor,
+            ),
+            onChanged: (String? newValue) {
+              setState(() {
+                schoolBuildingId = newValue!;
+              });
+            },
+            items: buildingDropDownList,
+          ),
+          const SizedBox(height: 24),
+          AuthButton(
+            onTap: increaseRegistrationStep,
+            label: "Weiter",
+            isLoading: _isLoading,
+          ),
+          const SizedBox(height: 24),
+        ];
+      case 3:
+        if (classNames == []) {
+          loadClasses();
+          return [
+            Center(child: CircularProgressIndicator()),
+          ];
+        }
         return [
           TextFieldInput(
             hintText: "Vorname",
@@ -294,9 +473,18 @@ class _SignupScreenState extends State<SignupScreen> {
             onTap: increaseRegistrationStep,
             label: "Weiter",
             isLoading: _isLoading,
-          )
+          ),
+          // const SizedBox(height: 24),
+          // AuthButton(
+          //   onTap: () => setState(() {
+          //     registrationStep--;
+          //   }),
+          //   label: "Zurück",
+          //   color: lightRed,
+          //   isLoading: _isLoading,
+          // )
         ];
-      case 3:
+      case 4:
         return [
           Stack(
             children: [
@@ -349,7 +537,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         height: MediaQuery.of(context).size.height * 0.8,
                         child: SelectHomeAddress(
                           classId: schoolClassItem.id,
-                          schoolId: school.id,
+                          schoolId: schoolBuildingId.isEmpty
+                              ? school.id
+                              : schoolBuildingId,
                           setLocation: setLocation,
                           setLocation2: setLocation2,
                           location1: location1,
@@ -381,7 +571,15 @@ class _SignupScreenState extends State<SignupScreen> {
             label: "Registrieren",
             isLoading: _isLoading,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 24),
+          AuthButton(
+            onTap: () => setState(() {
+              registrationStep--;
+            }),
+            label: "Zurück",
+            color: lightRed,
+            isLoading: _isLoading,
+          )
           // Flexible(child: Container(), flex: 2),
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.center,
@@ -410,17 +608,20 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 60),
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: buildRegistrationSite(),
-            ),
-          ),
-        ),
+        child: !_isLoadingScreen
+            ? SingleChildScrollView(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 60),
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: buildRegistrationSite(),
+                  ),
+                ),
+              )
+            : Center(child: CircularProgressIndicator()),
       ),
     );
   }

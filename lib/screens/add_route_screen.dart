@@ -4,6 +4,7 @@ import 'package:co2fzs/models/contest.dart';
 import 'package:co2fzs/models/location.dart';
 import 'package:co2fzs/models/school.dart';
 import 'package:co2fzs/models/schoolClass.dart';
+import 'package:co2fzs/models/school_building.dart';
 import 'package:co2fzs/models/user.dart';
 import 'package:co2fzs/providers/contest_provider.dart';
 import 'package:co2fzs/providers/school_class_provider.dart';
@@ -51,9 +52,13 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
   Location location1 = Location.getEmptyLocation();
   Location location2 = Location.getEmptyLocation();
 
+  SchoolBuilding? schoolBuilding;
+  List<SchoolBuilding> schoolBuildings = [];
+
   bool _schoolLoaded = false;
   bool _contestLoaded = false;
   bool _locationLoaded = false;
+  bool _buildingsLoaded = false;
 
   int addingStep = 0;
 
@@ -196,6 +201,16 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
       return;
     }
 
+    if (startDate.weekday == 6 || startDate.weekday == 7) {
+      showSnackBar(
+          context, "Am Wochenende können keine Einträge vorgenommen werden.");
+      Navigator.pop(context);
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
     Location selectedLocation;
 
     if (startAddress == location1.name) {
@@ -206,7 +221,8 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
 
     String res = await FirestoreMethods().uploadRoute(
       startAddress: selectedLocation.id,
-      endAddress: endAddress,
+      endAddress:
+          schoolBuilding == null ? school!.location : schoolBuilding!.location,
       driveBack: isChecked,
       transport: selectedVehicle,
       date: startDate,
@@ -256,6 +272,38 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
     }
   }
 
+  loadSchoolBuildings(String schoolID, String classID) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      var res = await FirestoreMethods().catchBuildings(
+        schoolIdBlank: schoolID,
+      );
+
+      if (res is String) {
+        showSnackBar(context, res);
+      } else {
+        res.forEach(
+          (element) => schoolBuildings.add(
+            SchoolBuilding.fromSnap(element),
+          ),
+        );
+        schoolBuildings.forEach((element) {
+          if (element.classes.contains(classID)) {
+            schoolBuilding = element;
+          }
+        });
+      }
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+    setState(() {
+      _isLoading = false;
+      _buildingsLoaded = true;
+    });
+  }
+
   void increaseAddingStep() {
     setState(() {
       addingStep++;
@@ -292,6 +340,10 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
 
     if (!_contestLoaded && _contestLoadingAttempt < 5) {
       loadContest();
+    }
+
+    if (!_buildingsLoaded) {
+      loadSchoolBuildings(user.schoolIdBlank, user.classId);
     }
 
     initializeDateFormatting();
@@ -534,7 +586,10 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                                                 ),
                                                 isChecked
                                                     ? AutoSizeText(
-                                                        school!.location,
+                                                        schoolBuilding == null
+                                                            ? school!.location
+                                                            : schoolBuilding!
+                                                                .location,
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyText2!
@@ -689,7 +744,10 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
                                                             minFontSize: 12,
                                                           )
                                                     : AutoSizeText(
-                                                        school!.location,
+                                                        schoolBuilding == null
+                                                            ? school!.location
+                                                            : schoolBuilding!
+                                                                .location,
                                                         maxLines: 3,
                                                         style: Theme.of(context)
                                                             .textTheme

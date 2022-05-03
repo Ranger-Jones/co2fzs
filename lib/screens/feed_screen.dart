@@ -370,6 +370,7 @@ class _FeedScreenState extends State<FeedScreen> {
               stream: FirebaseFirestore.instance
                   .collection("users")
                   .orderBy("totalPoints", descending: true)
+                  .where("schoolIdBlank", isEqualTo: user.schoolIdBlank)
                   .where("role", isEqualTo: "user")
                   .limit(3)
                   .snapshots(),

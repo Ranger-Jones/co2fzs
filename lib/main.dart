@@ -1,7 +1,7 @@
 import 'package:co2fzs/providers/contest_provider.dart';
 import 'package:co2fzs/providers/school_class_provider.dart';
 import 'package:co2fzs/providers/school_provider.dart';
-import 'package:co2fzs/screens/rankings_screen.dart';
+import 'package:co2fzs/screens/rankings_screen2.dart';
 import 'package:co2fzs/utils/config.dart';
 import 'package:co2fzs/widgets/route_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
