@@ -8,18 +8,7 @@ class SchoolProvider with ChangeNotifier {
   School? _school;
   final AuthMethods _authMethods = AuthMethods();
 
-  School get getSchool =>
-      _school ??
-      School(
-        schoolId: 1,
-        id: "none",
-        schoolname: "none",
-        location: "none",
-        classes: "none",
-        totalPoints: 0,
-        users: [],
-        contestId: "none",
-      );
+  School get getSchool => _school!;
 
   Future<void> refreshSchool() async {
     School? school = await _authMethods.getSchoolDetails();

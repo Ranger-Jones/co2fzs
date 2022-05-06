@@ -26,6 +26,8 @@ class _RouteDetailState extends State<RouteDetail> {
 
   Location? endLocation;
 
+  bool _isLoading = false;
+
   bool _locationLoaded1 = false;
   bool _locationLoaded2 = false;
 
@@ -38,6 +40,9 @@ class _RouteDetailState extends State<RouteDetail> {
 
   deleteRoute(String userId, String routeId, String schoolId, String classId,
       double points) async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       String res = await FirestoreMethods().deleteRoute(
           userId: userId,
@@ -54,6 +59,9 @@ class _RouteDetailState extends State<RouteDetail> {
     } catch (e) {
       showSnackBar(context, e.toString());
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void loadLocation(String locationId, bool startLocationState) async {
@@ -85,76 +93,88 @@ class _RouteDetailState extends State<RouteDetail> {
             !widget.otherProfileState
                 ? IconButton(
                     icon: Icon(Icons.delete, color: lightRed),
-                    onPressed: () => deleteRoute(user.uid, widget.route.id,
-                        user.schoolIdBlank, user.classId, widget.route.points),
+                    onPressed: () => !_isLoading
+                        ? deleteRoute(
+                            user.uid,
+                            widget.route.id,
+                            user.schoolIdBlank,
+                            user.classId,
+                            widget.route.points)
+                        : null,
                   )
                 : Container()
           ],
         ),
-        body: SafeArea(
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 64),
-                Text(
-                  "${widget.route.points}",
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Punkte",
-                  style: Theme.of(context).textTheme.headline3,
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        Text("VON"),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.45,
-                          height: MediaQuery.of(context).size.height * 0.1,
-                          child: AutoSizeText(
-                            widget.route.driveBack
-                                ? widget.route.endAddress
-                                : startLocation!.name,
-                            style: Theme.of(context).textTheme.headline3,
-                            maxLines: 3,
-                            textAlign: TextAlign.center,
+        body: !_isLoading
+            ? SafeArea(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 64),
+                      Text(
+                        "${widget.route.points}",
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Punkte",
+                        style: Theme.of(context).textTheme.headline3,
+                      ),
+                      SizedBox(height: 10),
+                      Divider(),
+                      SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              Text("VON"),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.45,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.1,
+                                child: AutoSizeText(
+                                  widget.route.driveBack
+                                      ? widget.route.endAddress
+                                      : startLocation!.name,
+                                  style: Theme.of(context).textTheme.headline3,
+                                  maxLines: 3,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text("NACH"),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.45,
-                          height: MediaQuery.of(context).size.height * 0.1,
-                          child: AutoSizeText(
-                            widget.route.driveBack
-                                ? startLocation!.name
-                                : widget.route.endAddress,
-                            style: Theme.of(context).textTheme.headline3,
-                            maxLines: 3,
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      ],
-                    )
-                  ],
+                          Column(
+                            children: [
+                              Text("NACH"),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.45,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.1,
+                                child: AutoSizeText(
+                                  widget.route.driveBack
+                                      ? startLocation!.name
+                                      : widget.route.endAddress,
+                                  style: Theme.of(context).textTheme.headline3,
+                                  maxLines: 3,
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                      Icon(Icons.bike_scooter, size: 100, color: primaryColor)
+                    ],
+                  ),
                 ),
-                Icon(Icons.bike_scooter, size: 100, color: primaryColor)
-              ],
-            ),
-          ),
-        ),
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
       );
     } else {
       loadLocation(widget.route.startAddress, true);

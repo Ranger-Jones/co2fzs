@@ -2,7 +2,7 @@ import 'package:co2fzs/models/transport_option.dart';
 import 'package:co2fzs/screens/add_route_screen.dart';
 import 'package:co2fzs/screens/news_screen.dart';
 import 'package:co2fzs/screens/profile_screen.dart';
-import 'package:co2fzs/screens/rankings_screen.dart';
+import 'package:co2fzs/screens/rankings_screen2.dart';
 import 'package:flutter/material.dart';
 import 'package:co2fzs/screens/feed_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';

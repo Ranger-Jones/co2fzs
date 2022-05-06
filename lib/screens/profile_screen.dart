@@ -80,16 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       showSnackBar(context, res);
       return loadSchool(context);
     } else {
-      school = School(
-        schoolId: res["schoolId"],
-        id: res["id"],
-        schoolname: res["schoolname"],
-        location: res["location"],
-        classes: res["classes"],
-        totalPoints: double.parse("${res["totalPoints"]}"),
-        users: res["users"],
-        contestId: res["contestId"],
-      );
+      school = School.fromSnap(res);
       setState(() {
         _schoolLoaded = true;
       });
@@ -211,32 +202,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   String calculateAverageTransportOption() {
-    int carCount = routes.where((element) => element.transport == "car").length;
-    int ptCount = routes.where((element) => element.transport == "pt").length;
-    int bicycleCount =
-        routes.where((element) => element.transport == "bicycle").length;
-    int walkCount =
-        routes.where((element) => element.transport == "walk").length;
+    double carCount = 0;
+    routes.where((element) => element.transport == "car").forEach((e) {
+      carCount += e.points;
+    });
+    double ptCount = 0;
 
-    Map<String, int> transportListCount = {
+    routes.where((element) => element.transport == "pt").forEach((e) {
+      ptCount += e.points;
+    });
+
+    double bicycleCount = 0;
+
+    routes.where((element) => element.transport == "bicycle").forEach((e) {
+      bicycleCount += e.points;
+    });
+
+    double walkCount = 0;
+
+    routes.where((element) => element.transport == "walk").forEach((e) {
+      walkCount += e.points;
+    });
+
+    Map<String, double> transportListCount = {
       "Auto": carCount,
       "ÖPNV": ptCount,
       "Fahrrad": bicycleCount,
       "Zu Fuß": walkCount,
     };
 
-    int largestValue = 0;
+    double largestValue = 0;
     String mostUsedTransport = "Auto";
 
-    transportListCount.forEach(
-      (key, value) {
-        if (value > largestValue) {
-          largestValue = value;
-          mostUsedTransport = key;
-        }
-      },
-    );
-
+    transportListCount.forEach((key, value) {
+      if (value > largestValue) {
+        largestValue = value;
+        mostUsedTransport = key;
+      }
+    });
     return mostUsedTransport;
   }
 

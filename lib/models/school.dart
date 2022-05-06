@@ -12,6 +12,7 @@ class School {
   final double totalPoints;
   final String contestId;
   final String photoUrl;
+  final int totalUserCount;
 
   School({
     required this.schoolId,
@@ -23,6 +24,7 @@ class School {
     required this.users,
     required this.contestId,
     this.photoUrl = "",
+    required this.totalUserCount,
   });
 
   Map<String, dynamic> toJson() => {
@@ -35,6 +37,7 @@ class School {
         "users": users,
         "totalPoints": totalPoints,
         "contestId": contestId,
+        "totalUserCount": totalUserCount,
       };
 
   static School fromSnap(DocumentSnapshot snap) {
@@ -49,6 +52,7 @@ class School {
       users: snapshot["users"],
       totalPoints: double.parse("${snapshot["totalPoints"]}"),
       contestId: snapshot["contestId"],
+      totalUserCount: int.parse("${snapshot["totalUserCount"] ?? 0}"),
     );
   }
 }

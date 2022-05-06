@@ -193,16 +193,7 @@ class _SignupScreenState extends State<SignupScreen> {
             res is String) {
           showSnackBar(context, res);
         } else {
-          school = School(
-            schoolId: res["schoolId"],
-            id: res["id"],
-            schoolname: res["schoolname"],
-            location: res["location"],
-            classes: res["classes"],
-            totalPoints: double.parse("${res["totalPoints"]}"),
-            users: res["users"],
-            contestId: res["contestId"],
-          );
+          school = School.fromSnap(res);
           // catchClasses();
           loadSchoolBuildings();
           // await Future.delayed(Duration(milliseconds: 5000));

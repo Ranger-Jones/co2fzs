@@ -92,9 +92,9 @@ class _RankingListInfoState extends State<RankingListInfo> {
           child: RankingListRow(
             index: widget.index,
             name: schoolClass!.name,
-            points: schoolClass!.users.length > 0
+            points: schoolClass!.userCount > 0
                 ? double.parse(
-                    (schoolClass!.totalPoints / schoolClass!.users.length)
+                    (schoolClass!.totalPoints / schoolClass!.userCount)
                         .toStringAsFixed(2),
                   )
                 : 0,

@@ -178,21 +178,45 @@ class FirestoreMethods {
     List<model.Route> routes =
         userRoutes.docs.map((e) => model.Route.fromSnap(e)).toList();
 
-    int carCount = routes.where((element) => element.transport == "car").length;
-    int ptCount = routes.where((element) => element.transport == "pt").length;
-    int bicycleCount =
-        routes.where((element) => element.transport == "bicycle").length;
-    int walkCount =
-        routes.where((element) => element.transport == "walk").length;
+    QuerySnapshot allUserRoutes = await _firestore
+        .collection("users")
+        .doc(currentUser.uid)
+        .collection("routes")
+        .get();
 
-    Map<String, int> transportListCount = {
+    List<model.Route> allRoutes =
+        allUserRoutes.docs.map((e) => model.Route.fromSnap(e)).toList();
+
+    double carCount = 0;
+    allRoutes.where((element) => element.transport == "car").forEach((e) {
+      carCount += e.points;
+    });
+    double ptCount = 0;
+
+    allRoutes.where((element) => element.transport == "pt").forEach((e) {
+      ptCount += e.points;
+    });
+
+    double bicycleCount = 0;
+
+    allRoutes.where((element) => element.transport == "bicycle").forEach((e) {
+      bicycleCount += e.points;
+    });
+
+    double walkCount = 0;
+
+    allRoutes.where((element) => element.transport == "walk").forEach((e) {
+      walkCount += e.points;
+    });
+
+    Map<String, double> transportListCount = {
       "Auto": carCount,
       "ÖPNV": ptCount,
       "Fahrrad": bicycleCount,
       "Zu Fuß": walkCount,
     };
 
-    int largestValue = 0;
+    double largestValue = 0;
     String mostUsedTransport = "Auto";
 
     transportListCount.forEach((key, value) {

@@ -10,3 +10,5 @@ const textColor = Color.fromRGBO(45, 52, 54, 1.0);
 const lightBlue = Color.fromRGBO(116, 185, 255, 1.0);
 const lightPurple = Color.fromRGBO(162, 155, 254, 1.0);
 const lightRed = Color.fromRGBO(255, 118, 117, 1.0);
+const yellow = Color.fromRGBO(253, 203, 110, 1.0);
+const darkPurple = Color.fromRGBO(108, 92, 231, 1.0);

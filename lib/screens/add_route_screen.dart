@@ -93,18 +93,9 @@ class _AddRouteScreenState extends State<AddRouteScreen> {
         res == "SchulID ist inkorrekt" ||
         res is String) {
       // showSnackBar(context, res);
-      loadSchool();
+      return loadSchool();
     } else {
-      school = School(
-        schoolId: res["schoolId"],
-        id: res["id"],
-        schoolname: res["schoolname"],
-        location: res["location"],
-        classes: res["classes"],
-        totalPoints: double.parse("${res["totalPoints"]}"),
-        users: res["users"],
-        contestId: res["contestId"],
-      );
+      school = School.fromSnap(res);
       setState(() {
         _schoolLoaded = true;
         endAddress = school!.location;
