@@ -1,1 +1,3 @@
-
+ „CO2-frei zur Schule“ ist ein Wettbewerb von Schülern für Schüler. Das von-Bülow-Gymnasium Neudietendorf ruft alle Schüler und Lehrer auf, den Erwachsenen beim Klimaschutz ein Vorbild zu sein.
+Der Wettbewerb läuft jedes Jahr für drei Wochen. Wir beginnen jeweils am ersten Schultag nach den Osterferien. 
+In dieser App kannst du einfach anklicken, mit welchem Verkehrsmittel du deinen Schulweg zurücklegst. Je klimafreundlicher, desto mehr Punkte gibt es. Am Ende des Wettbewerbs warten auf die stärkste Klasse tolle Preise. Für die beste Schule gibt es einen Wanderpokal. Auch Einzelpreise winken. Vor allem aber gewinnen wir alle, weil wir etwas für unsere Zukunft tun.
